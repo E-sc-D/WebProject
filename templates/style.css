@@ -1,0 +1,290 @@
+:root{
+    --sb-primary : #FFA84A;
+    --sb-secondary : #FEBF7B;
+    --bg-primary : #020617;
+    --bg-secondary : #0F172A;
+    --text: #E5E7EB;
+}
+
+
+/* ==========================
+   RESET DI BASE
+   ========================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    background-color: var(--bg-primary);
+}
+
+/* ==========================
+   NAVBAR SUPERIORE
+   ========================== */
+
+.sb-topnav.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* sopra la sidebar */
+    height: 56px;
+    padding: 0 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* brand e bottone toggle inline a sinistra */
+.sb-topnav .navbar-brand,
+.sb-topnav #sidebarToggle {
+    display: inline-flex;
+    align-items: left;
+}
+
+.sb-topnav .navbar-brand {
+    margin-right: 0.75rem;
+}
+
+/* bottone toggle */
+#sidebarToggle {
+    color: var(--sb-primary);
+    border: none;
+    background: transparent;
+}
+
+/* blocco avatar + dropdown (ul) */
+.sb-topnav .navbar-nav {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+/* item del menu avatar */
+.sb-topnav .navbar-nav .nav-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* link avatar */
+.sb-topnav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--sb-primary);
+}
+
+/* ==========================
+   NASCONDERE SOLO L'AVATAR IN DESKTOP
+   ========================== */
+
+/* Di default (mobile/tablet): avatar visibile */
+.sb-topnav .navbar-nav.ms-auto.ms-md-0.me-3.me-lg-4 {
+    display: flex;
+}
+
+/* In modalità desktop (>= 992px): nascondi SOLO questo blocco */
+@media (min-width: 992px) {
+    .sb-topnav .navbar-nav.ms-auto.ms-md-0.me-3.me-lg-4 {
+        display: none !important;
+    }
+}
+
+/* ==========================
+   LAYOUT PRINCIPALE
+   ========================== */
+
+#layoutSidenav {
+    display: flex;
+    margin-top: 56px; /* altezza navbar superiore */
+    min-height: calc(100vh - 56px);
+}
+
+/* ==========================
+   SIDENAV (SINISTRA)
+   ========================== */
+
+#layoutSidenav_nav {
+    flex: 0 0 auto;
+    width: 2; /* base, gestito da media query e toggle */
+    overflow: hidden;
+    transition: width 0.2s ease-in-out;
+}
+
+/* contenitore nav laterale */
+.sb-sidenav {
+    height: 100%;
+    background-color: var(--bg-primary);
+    color: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #0f172a;
+}
+
+/* area menu */
+.sb-sidenav-menu {
+    flex: 1 1 auto;
+    padding-top: 1rem;
+}
+
+.sb-sidenav-menu .nav {
+    display: flex;
+    flex-direction: column;
+}
+
+/* intestazioni "Core", "Interface", ecc. */
+.sb-sidenav-menu-heading {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #ced4da;
+}
+
+/* link della sidebar */
+.sb-sidenav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--sb-primary);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.sb-sidenav .nav-link:hover,
+.sb-sidenav .nav-link:focus {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* icona a sinistra nel link */
+.sb-sidenav .sb-nav-link-icon {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* freccia apertura sottomenù */
+.sb-sidenav-collapse-arrow {
+    margin-left: auto;
+}
+
+/* footer della sidebar */
+.sb-sidenav-footer {
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-primary);
+    font-size: 0.8rem;
+    color: var(--text);
+}
+
+/* ==========================
+   CONTENUTO (DESTRA)
+   ========================== */
+
+#layoutSidenav_content {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#layoutSidenav_content main {
+    flex: 1 0 auto;
+    padding: 1.5rem;
+}
+
+#layoutSidenav_content footer {
+    flex-shrink: 0;
+}
+
+/* ==========================
+   DESKTOP (SIDEBAR FISSA)
+   ========================== */
+
+@media (min-width: 992px) {
+    #layoutSidenav_nav {
+        width: 225px; /* larghezza sidebar sinistra */
+    }
+
+    #layoutSidenav_content {
+        margin-left: 0; /* gestito dal flex */
+    }
+}
+
+/* ==========================
+   TOGGLE SIDEBAR
+   ========================== */
+
+/* Quando il body ha questa classe, la sidebar viene nascosta */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+    width: 0;
+}
+
+body.sb-sidenav-toggled #layoutSidenav_content {
+    margin-left: 0;
+}
+
+/* Mobile: sidebar tipo off-canvas */
+@media (max-width: 991.98px) {
+    #layoutSidenav_nav {
+        position: fixed;
+        top: 56px; /* sotto la topnav */
+        left: 0;
+        bottom: 0;
+        background-color: #343a40;
+        width: 0;
+        z-index: 1029;
+    }
+    .sb-sidenav{
+        background-color: var(--sb-secondary);
+        opacity: 0.90;
+        width: 100%;
+    }
+
+    body.sb-sidenav-toggled #layoutSidenav_nav {
+        width: 100%;
+    }
+}
+
+/* ==========================
+   VARIE UTILI
+   ========================== */
+
+/* breadcrumb senza sfondo */
+.breadcrumb {
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 1rem;
+}
+
+/* card */
+.card {
+    border-radius: 0.35rem;
+}
+
+/* testo mutato */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* demo: blocco altezza 100vh */
+[style*="height: 100vh"] {
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.03),
+        rgba(0, 0, 0, 0)
+    );
+}
