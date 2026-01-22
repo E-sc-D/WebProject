@@ -35,7 +35,7 @@ body {
    ========================== */
 
 .sb-topnav.navbar {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     right: 0;
@@ -194,6 +194,7 @@ body {
    ========================== */
 
 #layoutSidenav_content {
+    min-height: 100vh;
     flex: 1 1 auto;
     min-width: 0;
     display: flex;
@@ -252,6 +253,9 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         opacity: 0.90;
         width: 100%;
     }
+    .sb-sidenav .nav-link {
+        color: var(--text);
+    }
 
     body.sb-sidenav-toggled #layoutSidenav_nav {
         width: 100%;
@@ -287,4 +291,80 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         rgba(0, 0, 0, 0.03),
         rgba(0, 0, 0, 0)
     );
+}
+
+/* ==========================
+   STILE PER PAGINA FEEDS
+   ========================== */
+.card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD PERSONALIZZATA */
+.custom-card {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: none;
+    border-radius: 0.8rem;
+    height: 250px;
+    width: 176px;
+}
+.custom-card:hover {
+    box-shadow: 0 4px 8px rgba(255, 168, 74, 0.2);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.card-time {
+    color: var(--sb-primary);
+    margin-left: 9px;
+}
+
+.btn-icon.card-icon {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.btn-icon.card-icon:hover {
+    background: rgba(255, 152, 0, 0.15);
+}
+.btn-icon.card-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(255, 152, 0, 0.5);
+}
+
+.card-text {
+    color: var(--text);
+    font-size: 0.97rem;
+    margin-left: 9px;
+    margin-top: 2rem;
+}
+
+.fab-add {
+    position: fixed;
+    right: 24px;      
+    bottom: 24px;     
+    width: 90px;
+    height: 90px;
+    z-index: 2000;   
+    font-size: 5rem;
+    border-radius: 50%;
+    opacity: 0.8;
+    color: var(--text);
+    background-color: var(--sb-primary);
+    border: none;
+}
+.fab-add:hover {
+    opacity: 1.0;
 }
