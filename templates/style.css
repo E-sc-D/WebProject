@@ -35,7 +35,7 @@ body {
    ========================== */
 
 .sb-topnav.navbar {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     right: 0;
@@ -194,6 +194,7 @@ body {
    ========================== */
 
 #layoutSidenav_content {
+    min-height: 100vh;
     flex: 1 1 auto;
     min-width: 0;
     display: flex;
@@ -252,6 +253,9 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         opacity: 0.90;
         width: 100%;
     }
+    .sb-sidenav .nav-link {
+        color: var(--text);
+    }
 
     body.sb-sidenav-toggled #layoutSidenav_nav {
         width: 100%;
@@ -287,4 +291,269 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         rgba(0, 0, 0, 0.03),
         rgba(0, 0, 0, 0)
     );
+}
+
+/* ==========================
+   STILE PER PAGINA FEEDS
+   ========================== */
+.card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD PERSONALIZZATA */
+.custom-card {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: none;
+    border-radius: 0.8rem;
+    height: 335px;
+    width: 335px;
+}
+@media (max-width: 992px){
+    .custom-card {
+        height: 250px;
+        width: 176px;
+    }
+    .card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+}
+.custom-card:hover {
+    box-shadow: 0 4px 8px rgba(255, 168, 74, 0.2);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.card-time {
+    color: var(--sb-primary);
+    margin-left: 9px;
+}
+
+.btn-icon.card-icon {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.btn-icon.card-icon:hover {
+    background: rgba(255, 152, 0, 0.15);
+}
+.btn-icon.card-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(255, 152, 0, 0.5);
+}
+
+.card-text {
+    color: var(--text);
+    font-size: 0.97rem;
+    margin-left: 9px;
+    margin-top: 2rem;
+}
+
+.fab-add {
+    position: fixed;
+    right: 24px;      
+    bottom: 24px;     
+    width: 90px;
+    height: 90px;
+    z-index: 2000;   
+    font-size: 5rem;
+    border-radius: 50%;
+    opacity: 0.8;
+    color: var(--text);
+    background-color: var(--sb-primary);
+    border: none;
+}
+.fab-add:hover {
+    opacity: 1.0;
+}
+/* ==========================
+   STILE PER PAGINA FEED SINGOLA
+   ========================== */
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 1.5rem;
+}
+
+/* wrapper area centrale (stesso sfondo scuro del design) */
+.spotted-wrapper {
+    background: var(--bg-primary);
+}
+
+/* CARD POST PRINCIPALE */
+.spotted-post {
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 0.9rem;
+    color: var(--text);
+    min-height: 260px;
+    width: 512px;
+    height: 496px;
+    position: static;
+    display: flex;
+    padding: 80px;
+}
+/* card-body già in flex colonna */
+.spotted-post .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* contenitore dei bottoni in fondo a destra */
+.spotted-footer-buttons {
+    margin-top: auto;                 
+    display: flex;
+    justify-content: flex-end;        
+    align-items: center;
+    gap: 0.75rem;                     
+}
+/* label in alto a sinistra (arancione) */
+.spotted-label {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+}
+
+/* tempo in alto a destra */
+.spotted-time {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+}
+
+/* testo centrale del post */
+.spotted-text {
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+.spotted-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* bottone like grande dentro il post */
+.btn-like {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.btn-like:hover {
+    background: rgba(255, 159, 28, 0.12);
+}
+
+/* bottone "Respond" come nel design */
+.btn-respond {
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    color: var(--text);
+    background-color: var(--sb-primary);
+    border: none;
+}
+.btn-respond:hover {
+    background-color: #ffb366; /* tonalità più chiara di arancione */
+}
+
+/* CARD COMMENTO */
+.spotted-comment {
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 0.5rem;
+    color: var(--text);
+    width: 512px;
+    height: 100px;
+    margin-bottom: 16px;
+    padding-left: 10px;
+}
+
+.comment-user {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+    text-transform: lowercase;
+}
+
+.comment-time {
+    font-size: 0.7rem;
+    color: var(--sb-primary);
+}
+
+.comment-text {
+    font-size: 0.75rem;
+    color: var(--spotted-text);
+}
+
+/* like piccolo nei commenti */
+.btn-like-sm {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.btn-like-sm:hover {
+    background: rgba(255, 159, 28, 0.12);
+}
+
+/* RESPONSIVE: su mobile post sopra, commenti sotto a tutta larghezza */
+@media (max-width: 992px) {
+    .row {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .spotted-post{
+        width: 372px;
+        height: 369px;
+        position: static;
+        padding: 18px;
+    }
+    .spotted-comment {
+        width: 372px;
+        height: 85px;
+    }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .row {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .spotted-post{
+        width: 512px;
+        height: 496px;
+        position: static;
+        padding: 60px;
+    }
+    .spotted-comment {
+        width: 512px;
+        height: 100px;
+    }
 }
