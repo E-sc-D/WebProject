@@ -18,6 +18,13 @@ Abbiamo 3 tipologie di funzioni:
 function loadWaitScreen(){
     //
 }
+function writeInPage(content){
+   document.querySelector("main").innerHTML = content; 
+} 
+function writeInLoginError(error) {
+    document.querySelector("form > p").innerText = error;
+}
+
 async function evSignIn(username, password) {
     const url = '../api-signIn.php';
     const formData = new FormData();
@@ -36,17 +43,18 @@ async function evSignIn(username, password) {
 
         switch (json["error"]) {
             case "missingdata":
-                document.querySelector("form > p").innerText = "devi completare tutti i campi";
+                writeInLoginError("devi completare tutti i campi");
                 break;
             
             case "userexists":
-                document.querySelector("form > p").innerText = "nome utente gia in uso";
+                writeInLoginError("nome utente gia in uso");
                 break;
 
             case "baddata":
-                document.querySelector("form > p").innerText = "errore con i dati inseriti";
+                writeInLoginError("errore con i dati inseriti");
                 break;
             default:
+                //sends a positive feedback
                 loadWaitScreen();
                 getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
                 break;
@@ -74,15 +82,22 @@ async function evLogin(username, password) {
             throw new Error(`Response status: ${response.status}`);
         }
         const json = await response.json();
-        if(json["logineseguito"]){
-            loadWaitScreen();
-            getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
-        }
-        else{
-            document.querySelector("form > p").innerText = json["errorelogin"];
-        }
 
-
+        switch (json["error"]) {
+            case "":
+                loadWaitScreen();
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                break;
+            case "dataerror":
+                writeInLoginError("password e/o username invalidi");
+                break;
+            case "missingdata":
+                writeInLoginError("inserire sia la password che l'utente");
+                break;
+            default:
+                break;
+        }
+        
     } catch (error) {
         console.log(error.message);
     }
@@ -130,7 +145,7 @@ async function getPostsPage(url) {
                 </div>
             </div>`;               
         });
-        document.querySelector("main").innerHTML = doc;
+        writeInPage(doc);
     } catch (error) {
         console.log(error.message);
     }
@@ -154,7 +169,7 @@ async function generaLoginPage() {
             </li>
         </ul>
     </form>`;
-    document.querySelector("main").innerHTML = form;
+    writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main form").addEventListener("submit", function (event) {
         event.preventDefault();
@@ -181,7 +196,7 @@ async function generaSignInPage() {
             </li>
         </ul>
     </form>`;
-    document.querySelector("main").innerHTML = form;
+    writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main form").addEventListener("submit", function (event) {
         event.preventDefault();
@@ -190,10 +205,6 @@ async function generaSignInPage() {
         evSignIn(username, password);
     });
 }
-
-
-
-
 
 
 document.querySelector("main button")
