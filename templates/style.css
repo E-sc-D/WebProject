@@ -296,10 +296,18 @@ body.sb-sidenav-toggled #layoutSidenav_content {
 /* ==========================
    STILE PER PAGINA FEEDS
    ========================== */
+main {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
 .card-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
     gap: 1.5rem;
+    flex-wrap: wrap;
+    padding: 0 2rem;
 }
 
 /* CARD PERSONALIZZATA */
@@ -317,9 +325,11 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         width: 176px;
     }
     .card-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    display: flex;
+    justify-content: space-evenly;  
+    align-items: flex-start;
     gap: 1.5rem;
+    flex-wrap: wrap;
 }
 }
 .custom-card:hover {
@@ -383,15 +393,20 @@ body.sb-sidenav-toggled #layoutSidenav_content {
    STILE PER PAGINA FEED SINGOLA
    ========================== */
 
-.row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+.row-singolo {
+    display: flex;
+    justify-content: center;  
+    align-items: flex-start;
     gap: 1.5rem;
+    flex-wrap: wrap;          
 }
 
 /* wrapper area centrale (stesso sfondo scuro del design) */
 .spotted-wrapper {
     background: var(--bg-primary);
+    display: flex;
+    justify-content: center;   /* centra il contenuto dentro lo sfondo scuro */
+    padding: 2rem 0;           /* un po’ di spazio sopra e sotto */
 }
 
 /* CARD POST PRINCIPALE */
@@ -526,7 +541,7 @@ body.sb-sidenav-toggled #layoutSidenav_content {
 
 /* RESPONSIVE: su mobile post sopra, commenti sotto a tutta larghezza */
 @media (max-width: 992px) {
-    .row {
+    .row-singolo {
         display: grid;
         grid-template-columns: 1fr;
     }
@@ -542,7 +557,7 @@ body.sb-sidenav-toggled #layoutSidenav_content {
     }
 }
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .row {
+    .row-singolo {
         display: grid;
         grid-template-columns: 1fr;
     }
