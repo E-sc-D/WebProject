@@ -127,23 +127,33 @@ async function getPostsPage(url) {
         
         json["data"].forEach(element => {
             doc += `
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-
-                    <h6 class="card-title mb-2">
-                        ${element.titolo}
-                    </h6>
-
-                    <p class="card-text small text-muted">
-                        ${element.testo}
-                    </p>
-
-                    <div class="d-flex justify-content-between text-muted small mt-2">
-                        <span>❤️ ${element.like_count}</span>
-                        <span>💬 ${element.comment_count}</span>
+            <div class="container-fluid py-4">
+                <div class="row g-4 card-row">
+                    <div class="col-6 col-lg-3">
+                        <div class="card shadow-sm h-100 custom-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="card-time"><span>•</span> 2h fa</small>
+                                    <button type="button" class="btn btn-icon card-icon">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <div class="mt-2 card-text">
+                                        <p>${element.testo}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>`;               
+            </div>
+            <button
+                type="button"
+                class="btn btn-warning rounded-circle fab-add"
+            >
+                +
+            </button> `;                    
         });
         writeInPage(doc);
     } catch (error) {
