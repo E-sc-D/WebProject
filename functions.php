@@ -17,4 +17,11 @@ function registerLoggedUser($user_id,$username){
     $_SESSION["user_id"] = $user_id;
     $_SESSION["username"] = $username;
 }
+
+function isValidString($value): bool
+{
+    return isset($value) && is_string($value) && trim($value) !== '';
+}
+
+
 ?>

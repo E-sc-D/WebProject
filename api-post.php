@@ -4,7 +4,7 @@ require_once 'bootstrap.php';
 $response["error"] = "";
 $response["data"] = "";
 //controllo di condizioni di accesso al database
-if (isUserLoggedIn()) {
+if (isUserLoggedIn()){
     $queryResult = $dbh->getPosts(
     $_GET["limit"],
     $_GET["offset"],
@@ -13,10 +13,10 @@ if (isUserLoggedIn()) {
     $_GET["id"]
     );
     //controllo di esito della query
-    if(isset($queryResult["error"])){
-        $response["error"] = $queryResult["error"]; 
-    } else {
-       $response["data"] = $queryResult; 
+    switch ($queryResult["error"]) {        
+        default:
+            $response = $queryResult;
+            break;
     }
 
 } else {

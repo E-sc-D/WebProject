@@ -1,16 +1,24 @@
 <?php
 require_once 'bootstrap.php';
-
+$result["data"] = "";
 $result["error"] = "";
 
-if(isset($_POST["username"]) && isset($_POST["password"])){
-    $register_result = $dbh->registerUser($_POST["username"], $_POST["password"]);
-    if(isset($register_result["user_id"])){
-        registerLoggedUser($register_result["user_id"],$_POST["username"]);
-        $result["user_id"] = $register_result["user_id"];
-    } else {
-        $result["error"] = $register_result["error"];
+if(isValidString($_POST["username"] ?? null) && 
+        isValidString($_POST["email"] ?? null) &&
+        isValidString($_POST["password"] ?? null)){
+
+    $query_result = $dbh->signInUser($_POST["username"], $_POST["email"],$_POST["password"]);
+    switch ($query_result["error"]) {
+        case '':
+            registerLoggedUser($query_result["data"]["user_id"],$_POST["username"]);
+            $result["data"] = $query_result["data"]["user_id"];
+            break;
+        
+        default:
+            $result["error"] = $query_result["error"];
+            break;
     }
+
 } else { $result["error"] = "missingdata"; }
 
 header('Content-Type: application/json');

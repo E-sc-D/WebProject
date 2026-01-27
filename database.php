@@ -19,12 +19,26 @@ class DatabaseHelper{
  * 
  * restituisce un array associativo MYSQLI_ASSOC con l'esito della query
  *  */ 
+
+    private function emailExists(string $email): bool
+    {
+        $sql = "SELECT 1 FROM user WHERE email = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        $exists = $stmt->num_rows > 0;
+        $stmt->close();
+        return $exists;
+    }
+
     public function getPosts(
         int $limit = 10,
         int $offset = 0,
         string $order = 'DESC',
         string $filter = 'all',
         int $id ) {
+
 
         $order = strtoupper($order);
         if (!in_array($order, ['ASC', 'DESC'])) {
@@ -34,124 +48,136 @@ class DatabaseHelper{
         // Initialize statement
         $stmt = null;
 
-        switch ($filter) {
-            case 'all':
-                $sql =  "SELECT ".
-                        "p.post_id,".
-                        "p.titolo,".
-                        "p.testo,".
-                        "p.data_creazione,".
-                        "u.username, ".
-                        "COUNT(DISTINCT lp.user_id) AS like_count, ".
-                        "COUNT(DISTINCT c.comment_id) AS comment_count ".
+        $result = [
+            "data"  => [],
+            "error"=> ""
+        ];
+
+        try {
+            switch ($filter) {
+                case 'all':
+                    $sql =  "SELECT ".
+                            "p.post_id,".
+                            "p.titolo,".
+                            "p.testo,".
+                            "p.data_creazione,".
+                            "u.username, ".
+                            "COUNT(DISTINCT lp.user_id) AS like_count, ".
+                            "COUNT(DISTINCT c.comment_id) AS comment_count ".
+                            "FROM Post p ".
+                            "JOIN User u ON p.user_id = u.user_id ".
+                            "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                            "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "GROUP BY p.post_id ".
+                            "ORDER BY p.data_creazione $order ".
+                            "LIMIT ? OFFSET ?";
+                    
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("ii", $limit, $offset);
+                    break;
+
+                case 'most_liked':
+                    $sql = "SELECT .".
+                            "p.post_id, ".
+                            "p.titolo, ".
+                            "p.testo, ".
+                            "p.data_creazione, ".
+                            "u.username, ".
+                            "COUNT(lp.user_id) AS like_count ".
+                            "FROM Post p ".
+                            "JOIN User u ON p.user_id = u.user_id ".
+                            "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                            "GROUP BY p.post_id ".
+                            "ORDER BY like_count $order ".
+                            "LIMIT ? OFFSET ? ";
+                    
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("ii", $limit, $offset);
+                    break;
+
+                case 'most_commented':
+                    $sql =  "SELECT ".
+                            "p.post_id, ".
+                            "p.titolo, ".
+                            "p.testo, ".
+                            "p.data_creazione, ".
+                            "u.username, ".
+                            "COUNT(c.comment_id) AS comment_count ".
+                            "FROM Post p ".
+                            "JOIN User u ON p.user_id = u.user_id ".
+                            "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "GROUP BY p.post_id ".
+                            "ORDER BY comment_count $order ".
+                            "LIMIT ? OFFSET ? ";
+                
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("ii", $limit, $offset);
+                    break;
+
+                case 'my_posts':
+                    if ($id === null) {
+                        throw new Exception("User ID must be provided for 'my_posts' filter.");
+                    }
+                    $sql = "SELECT ".
+                            "p.post_id, ".
+                            "p.titolo, ".
+                            "p.testo, ".
+                            "p.data_creazione, ".
+                            "u.username ".
                         "FROM Post p ".
                         "JOIN User u ON p.user_id = u.user_id ".
-                        "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
-                        "LEFT JOIN Comment c ON p.post_id = c.post_id ".
-                        "GROUP BY p.post_id ".
+                        "WHERE p.user_id = ? ".
                         "ORDER BY p.data_creazione $order ".
-                        "LIMIT ? OFFSET ?";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param("ii", $limit, $offset);
-                break;
-
-            case 'most_liked':
-                $sql = "SELECT .".
-                        "p.post_id, ".
-                        "p.titolo, ".
-                        "p.testo, ".
-                        "p.data_creazione, ".
-                        "u.username, ".
-                        "COUNT(lp.user_id) AS like_count ".
-                        "FROM Post p ".
-                        "JOIN User u ON p.user_id = u.user_id ".
-                        "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
-                        "GROUP BY p.post_id ".
-                        "ORDER BY like_count $order ".
                         "LIMIT ? OFFSET ? ";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param("ii", $limit, $offset);
-                break;
+                    
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->bind_param("iii", $id, $limit, $offset);
+                    break;
+                                                
+                default:
+                   throw new Exception("Unknown filter type: $filter");
+            }
 
-            case 'most_commented':
-                $sql =  "SELECT ".
-                        "p.post_id, ".
-                        "p.titolo, ".
-                        "p.testo, ".
-                        "p.data_creazione, ".
-                        "u.username, ".
-                        "COUNT(c.comment_id) AS comment_count ".
-                        "FROM Post p ".
-                        "JOIN User u ON p.user_id = u.user_id ".
-                        "LEFT JOIN Comment c ON p.post_id = c.post_id ".
-                        "GROUP BY p.post_id ".
-                        "ORDER BY comment_count $order ".
-                        "LIMIT ? OFFSET ? ";
-            
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param("ii", $limit, $offset);
-                break;
+            $stmt->execute();
+            $qresult = $stmt->get_result();
+            $result["data"] = $qresult->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
 
-            case 'my_posts':
-                if ($id === null) {
-                    throw new Exception("User ID must be provided for 'my_posts' filter.");
-                }
-                $sql = "SELECT ".
-                        "p.post_id, ".
-                        "p.titolo, ".
-                        "p.testo, ".
-                        "p.data_creazione, ".
-                        "u.username ".
-                    "FROM Post p ".
-                    "JOIN User u ON p.user_id = u.user_id ".
-                    "WHERE p.user_id = ? ".
-                    "ORDER BY p.data_creazione $order ".
-                    "LIMIT ? OFFSET ? ";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->bind_param("iii", $id, $limit, $offset);
-                break;
-                                              
-            default:
-                return(["error" => "Unknown filter type: $filter"]);
-        }
-
-        if (!$stmt) {
-            return(["error" => "Prepare failed: " . $this->db->error ]);
-        }
+        } catch(Exception $e){ $result["error"] = $e->getMessage();}
 
         // Execute and fetch
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $posts = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
-        return $posts;
+        
+        return $result;
     }
 
-
     public function getPostById($id){
-        $query = "SELECT ".
-                        "p.post_id,".
-                        "p.titolo,".
-                        "p.testo,".
-                        "p.data_creazione,".
-                        "u.username, ".
-                        "COUNT(DISTINCT lp.user_id) AS like_count, ".
-                        "COUNT(DISTINCT c.comment_id) AS comment_count ".
-                        "FROM Post p ".
-                        "JOIN User u ON p.user_id = u.user_id ".
-                        "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
-                        "LEFT JOIN Comment c ON p.post_id = c.post_id ".
-                        "WHERE p.post_id = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i',$id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = [
+            "data"  => [],
+            "error"=> ""
+        ];
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        try {
+            $query = "SELECT ".
+                            "p.post_id,".
+                            "p.titolo,".
+                            "p.testo,".
+                            "p.data_creazione,".
+                            "u.username, ".
+                            "COUNT(DISTINCT lp.user_id) AS like_count, ".
+                            "COUNT(DISTINCT c.comment_id) AS comment_count ".
+                            "FROM Post p ".
+                            "JOIN User u ON p.user_id = u.user_id ".
+                            "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                            "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "WHERE p.post_id = ?";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param('i',$id);
+            $stmt->execute();
+            $qresult = $stmt->get_result();
+            $result["data"] = $qresult->fetch_all(MYSQLI_ASSOC);
+        } catch (Exception $e){ $result["error"] = "error";}
+
+        return $result;
     }
 
     function togglePostLike(int $userId, int $postId): array
@@ -338,32 +364,192 @@ class DatabaseHelper{
         return $result;
     }    
 
-    public function registerUser($username,$password){
-        if(!$this->userExists($username)){
-            $query = "INSERT INTO user  ".
-            "(username, password_hash) VALUES ".
-            "(?,?)";
+    public function signInUser(string $username, string $email, string $password): array
+    {
+        $result = [
+            "data"  => [],
+            "error" => ""
+        ];
 
-            $stmt = $this->db->prepare($query);
-            $hashed_password = password_hash($password,PASSWORD_ARGON2ID);
-            if($hashed_password != false){
-                $stmt->bind_param('ss',$username,$hashed_password);
-
-                if($stmt->execute()){
-                    $result = ["user_id" => $this->db->insert_id];
-                } else {
-                    $result = ["error" => "baddata"];
-                }
-            } else {
-                $result = ["error" => "internalError"];
+        try {
+            
+            if (trim($username) === '' || trim($email) === '' || trim($password) === '') {
+                throw new Exception("invalid_data");
             }
-            
-            
-        } else {
-            $result = ["error" => "userexists"];
+
+           
+            if ($this->userExists($username)) {
+                throw new Exception("username_exists");
+            }
+
+            if ($this->emailExists($email)) {
+                throw new Exception("email_exists");
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
+            if ($hashedPassword === false) {
+                throw new Exception("internal_error");
+            }
+
+            $sql = "
+                INSERT INTO user (username, email, password_hash)
+                VALUES (?, ?, ?)
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("db_error");
+            }
+
+            $stmt->bind_param("sss", $username, $email, $hashedPassword);
+
+            if (!$stmt->execute()) {
+                throw new Exception("db_error");
+            }
+
+            $result["data"] = [
+                "user_id" => $this->db->insert_id
+            ];
+
+            $stmt->close();
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
         }
+
         return $result;
     }
+
+
+    public function addCommentPost($user_id,$post_id,$text): array
+    {
+             
+        $result = [
+            "data"  => [],
+            "error" => ""
+        ];
+
+        try {
+
+            $text = trim($text);
+            if ($text === "") {
+                throw new Exception("Comment cannot be empty");
+            }
+
+           
+            $sql = "
+                INSERT INTO Comment (post_id, user_id, contenuto, data_creazione)
+                VALUES (?, ?, ?, NOW())
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("iis", $post_id, $user_id, $text);
+            $stmt->execute();
+
+            // 4️⃣ Return inserted data
+            $result["data"] = [
+                "comment_id" => $stmt->insert_id,
+                "post_id"    => $post_id,
+                "text"       => $text
+            ];
+
+            $stmt->close();
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    public function getUserById(int $userId): array
+    {
+        $result = [
+            "data"  => [],
+            "error" => null
+        ];
+
+        try {
+            $sql = "
+                SELECT user_id, username, email, bio, created_at
+                FROM User
+                WHERE user_id = ?
+                LIMIT 1
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+
+            $res = $stmt->get_result();
+            $user = $res->fetch_assoc();
+
+            $stmt->close();
+
+            if (!$user) {
+                throw new Exception("User not found");
+            }
+
+            $result["data"] = $user;
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
+    function updateUser(int $userId, string $username, string $email, ?string $bio): array
+    {
+        $result = [
+            "data"  => [],
+            "error" => null
+        ];
+
+        try {
+            // basic validation
+            if (trim($username) === "" || trim($email) === "") {
+                throw new Exception("Username and email are required");
+            }
+
+            $sql = "
+                UPDATE User
+                SET username = ?, email = ?, bio = ?
+                WHERE id = ?
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("sssi", $username, $email, $bio, $userId);
+            $stmt->execute();
+
+            if ($this->db->errno === 1062) {
+                throw new Exception("username or email already exists");
+            }
+
+            $stmt->close();
+
+            $result["data"] = "updated";
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
+        }
+
+        return $result;
+}
+
+
 
 
 }

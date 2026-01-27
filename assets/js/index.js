@@ -25,11 +25,12 @@ function writeInLoginError(error) {
     document.querySelector("form > p").innerText = error;
 }
 
-async function evSignIn(username, password) {
+async function evSignIn(username, password,email) {
     const url = '../api-signIn.php';
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
+    formData.append('email', email);
     try {
         const response = await fetch(url, {
             method: "POST",                   
@@ -53,14 +54,15 @@ async function evSignIn(username, password) {
             case "baddata":
                 writeInLoginError("errore con i dati inseriti");
                 break;
-            default:
+            case "":
                 //sends a positive feedback
                 loadWaitScreen();
                 getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
                 break;
+            default:
+                writeInLoginError(json["error"]);
+                break;
         }
-
-
     } catch (error) {
         console.log(error.message);
     }
@@ -166,7 +168,88 @@ async function evToggleLike(post_id,like_path){
     }
 }
 
+async function evAddComment(comment_selector,post_id){
+    //comment selector deve andare a prendere il testo del commento
+    const testo = "commento di prova";
+    const url = `../api-add-comment-post.php?post_id=${post_id}&text=${testo}`;
+    try {
 
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+async function evUpdateUser(comment_selector,post_id){
+    //comment selector deve andare a prendere il testo del commento
+    const testo = "commento di prova";
+    const url = `../api-add-comment-post.php?post_id=${post_id}&text=${testo}`;
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+async function getUserPage(url){
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+        const json = await response.json();
+
+        let doc = "";
+
+        
+        switch (json["error"]) {
+            case "nologin":
+                generaLoginPage()
+                throw new Error("no login");
+        
+            default:
+                break;
+        }
+        
+        console.log(json);
+        //document.querySelector(posts_path).innerHTML = doc;
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 async function getPostComments(url,posts_path) {
     try {
         const response = await fetch(url);
@@ -212,13 +295,13 @@ async function getPostPage(url) {
 
         let doc = "";
 
-        
         switch (json["error"]) {
             case "nologin":
                 generaLoginPage()
                 throw new Error("no login");
         
             default:
+                console.log(json["error"]);
                 break;
         }
         
@@ -360,8 +443,9 @@ async function getPostsPage(url) {
 }
 
 async function getMyPostsPage(){
-    
+
 }
+
 
 //costruisce una pagina senza bisogno di ricevere dati
 async function generaLoginPage() {
