@@ -31,13 +31,15 @@ CREATE TABLE IF NOT EXISTS `comment` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON DELETE CASCADE,
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.comment: ~3 rows (approximately)
+-- Dumping data for table spotted.comment: ~5 rows (approximately)
 INSERT INTO `comment` (`comment_id`, `post_id`, `user_id`, `contenuto`, `data_creazione`) VALUES
 	(7, 4, 8, 'Forse era una mia amica 👀', '2026-01-23 16:58:56'),
 	(8, 5, 9, 'L’ho vista anche io', '2026-01-23 16:58:56'),
-	(9, 6, 10, 'Credo fosse uno studente di ingegneria', '2026-01-23 16:58:56');
+	(9, 6, 10, 'Credo fosse uno studente di ingegneria', '2026-01-23 16:58:56'),
+	(10, 4, 9, 'commento di prova', '2026-01-27 14:39:09'),
+	(11, 4, 9, 'commento di prova', '2026-01-27 14:40:10');
 
 -- Dumping structure for table spotted.like_comment
 CREATE TABLE IF NOT EXISTS `like_comment` (
@@ -67,9 +69,10 @@ CREATE TABLE IF NOT EXISTS `like_post` (
   CONSTRAINT `like_post_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.like_post: ~3 rows (approximately)
+-- Dumping data for table spotted.like_post: ~4 rows (approximately)
 INSERT INTO `like_post` (`post_id`, `user_id`, `data_creazione`) VALUES
 	(4, 8, '2026-01-23 17:00:23'),
+	(4, 11, '2026-01-27 20:47:44'),
 	(5, 9, '2026-01-23 17:00:23'),
 	(6, 10, '2026-01-23 17:00:23');
 
@@ -136,17 +139,22 @@ INSERT INTO `report_post` (`id_progressivo`, `post_id`, `user_id`, `commento`, `
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `bio` text DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `s_power_user` tinyint(1) DEFAULT 0,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.user: ~3 rows (approximately)
-INSERT INTO `user` (`user_id`, `username`, `password_hash`, `s_power_user`) VALUES
-	(8, 'rossomalpelo', '$argon2id$v=19$m=65536,t=4,p=1$UWdsbHRjT1BBcU1xa09oYw$VLtjSTy70B5qddS/NUcDbwDCKF97TwNwhF/cY+SlWp4', 0),
-	(9, 'mario', '$argon2id$v=19$m=65536,t=4,p=1$TTl0NThEVVdCdUE3TjRFTA$5b4LJYQJGAHhO12+cO8RoS+tuUYEUhtUbFb8W0Zt9GQ', 0),
-	(10, 'anna', '$argon2id$v=19$m=65536,t=4,p=1$ZnRhL1FXM0tNZ2ZzaHVyVQ$mpr230kpfjSGXuIleMIgdaqFpGo+F8+A6l7BEf+1Fd8', 0);
+-- Dumping data for table spotted.user: ~4 rows (approximately)
+INSERT INTO `user` (`user_id`, `username`, `email`, `bio`, `password_hash`, `s_power_user`, `created_at`) VALUES
+	(8, 'rossomalpelo', 'rossomalpelo@example.com', 'Loves literature and strong opinions.', '$argon2id$v=19$m=65536,t=4,p=1$UWdsbHRjT1BBcU1xa09oYw$VLtjSTy70B5qddS/NUcDbwDCKF97TwNwhF/cY+SlWp4', 0, '2026-01-27 14:51:01'),
+	(9, 'mario', 'mario@example.com', 'Just a regular Mario.', '$argon2id$v=19$m=65536,t=4,p=1$TTl0NThEVVdCdUE3TjRFTA$5b4LJYQJGAHhO12+cO8RoS+tuUYEUhtUbFb8W0Zt9GQ', 0, '2026-01-27 14:51:01'),
+	(10, 'anna', 'anna@example.com', 'Curious mind and coffee enthusiast.', '$argon2id$v=19$m=65536,t=4,p=1$ZnRhL1FXM0tNZ2ZzaHVyVQ$mpr230kpfjSGXuIleMIgdaqFpGo+F8+A6l7BEf+1Fd8', 0, '2026-01-27 14:51:01'),
+	(11, 'mattia', 'mattia@gmail.com', NULL, '$argon2id$v=19$m=65536,t=4,p=1$T2hud0dWRTdWNlpMNXF1eA$Bk7HAmAVXzh7qrzH+K9TGnXQjHmIuwncWuSCBMCWLzA', 0, '2026-01-27 15:40:54');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
