@@ -1,17 +1,24 @@
 <?php
 require_once 'bootstrap.php';
 
-if (!isUserLoggedIn()) {
-    echo json_encode(['error' => 'Not logged in']);
-    exit;
+$response["error"] = "";
+$response["data"] = "";
+//controllo di condizioni di accesso al database
+if (isUserLoggedIn()) {
+    $queryResult = $dbh->getPostById(
+        $_GET["post_id"]
+    );
+    //controllo di esito della query
+    if(isset($queryResult["error"])){
+        $response["error"] = $queryResult["error"]; 
+    } else {
+       $response["data"] = $queryResult; 
+    }
+
+} else {
+    $response["error"] = "nologin";
 }
 
-$articoli = $dbh->getPostById(
-    $_GET["id"],
-    );
-
 header('Content-Type: application/json');
-echo json_encode($articoli);
+echo json_encode($response);
 ?>
-
-<!-- add session control session is passed with ajax -->

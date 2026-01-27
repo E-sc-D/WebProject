@@ -2,20 +2,24 @@
 require_once 'bootstrap.php';
 
 $result["error"] = "";
+$result["data"] = "";
 
 if(isset($_POST["username"]) && isset($_POST["password"])){
     $login_result = $dbh->checkLogin($_POST["username"], $_POST["password"]);
-    if(count($login_result) == 0){
-        //Login fallito
-        $result["error"] = "dataerror";
-    }
-    else{
-        registerLoggedUser($login_result[0]["user_id"],
-                            $login_result[0]["username"]);
-                            
-    }
-} else { $result["error"] = "missingdata";}
 
+    switch($login_result["error"]){
+        case "":
+            registerLoggedUser($login_result["data"]["user_id"],
+                            $login_result["data"]["username"]); 
+            $result = $login_result;
+            break;
+        default:
+            $result = $login_result;
+            break;
+    }
+} else { 
+    $result["error"] = "missingdata"; 
+}
 
 header('Content-Type: application/json');
 echo json_encode($result);

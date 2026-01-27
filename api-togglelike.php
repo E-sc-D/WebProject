@@ -16,23 +16,17 @@ if (isUserLoggedIn()) {
             exit;
         }
     
-        $queryResult = $dbh->getCommentsByPost(
-            $pid,
-            //ordine specificabile
+        $queryResult = $dbh->togglePostLike(
+            $_SESSION["user_id"],
+            $_GET["post_id"]
         );
-        echo json_encode($queryResult);
-        exit();
+
         //controllo di esito della query
-        switch ($queryResult["error"]) {
-            case '':
-                $response["data"] = $queryResult["data"]; 
-                $response["error"] = $queryResult["error"];
-                break;
-            
-            default:
-                # code...
-                break;
-        } 
+        if(isset($queryResult["error"])){
+            $response["error"] = $queryResult["error"]; 
+        } else {
+            $response["data"] = $queryResult["data"]; 
+        }  
     } else {
         $response["error"] = "iderror";
     }

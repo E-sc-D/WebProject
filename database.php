@@ -133,7 +133,19 @@ class DatabaseHelper{
 
 
     public function getPostById($id){
-        $query = "SELECT idarticolo, titoloarticolo, imgarticolo, testoarticolo, dataarticolo, nome FROM articolo, autore WHERE idarticolo=? AND autore=idautore";
+        $query = "SELECT ".
+                        "p.post_id,".
+                        "p.titolo,".
+                        "p.testo,".
+                        "p.data_creazione,".
+                        "u.username, ".
+                        "COUNT(DISTINCT lp.user_id) AS like_count, ".
+                        "COUNT(DISTINCT c.comment_id) AS comment_count ".
+                        "FROM Post p ".
+                        "JOIN User u ON p.user_id = u.user_id ".
+                        "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                        "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                        "WHERE p.post_id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i',$id);
         $stmt->execute();
@@ -142,43 +154,119 @@ class DatabaseHelper{
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    function togglePostLike(int $userId, int $postId): array
+    {
+        $result = [
+            "data"  => null,
+            "error"=> null
+        ];
+
+        try {
+            // 1️⃣ Check if like already exists
+            $checkSql = "
+                SELECT 1
+                FROM Like_Post
+                WHERE user_id = ? AND post_id = ?
+                LIMIT 1
+            ";
+
+            $stmt = $this->db->prepare($checkSql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $postId);
+            $stmt->execute();
+            $stmt->store_result();
+
+            $likeExists = $stmt->num_rows > 0;
+            $stmt->close();
+
+            // 2️⃣ Toggle
+            if ($likeExists) {
+                // REMOVE LIKE
+                $sql = "
+                    DELETE FROM Like_Post
+                    WHERE user_id = ? AND post_id = ?
+                ";
+
+                $state = "off"; // OFF
+            } else {
+                // ADD LIKE
+                $sql = "
+                    INSERT INTO Like_Post (user_id, post_id)
+                    VALUES (?, ?)
+                ";
+
+                $state = "on"; // ON
+            }
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $postId);
+            $stmt->execute();
+            $stmt->close();
+
+            $result['data'] = $state;
+              
+        } catch (Exception $e) {
+            $result['error'] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
+
    /*  ../api-post.php?limit=5&offset=0&order=asc&filter=date&id=0 */
     function getCommentsByPost(
         int $post_id,
         string $order = 'ASC'){
         
-        // Validate order
-        $order = strtoupper($order);
-        if (!in_array($order, ['ASC', 'DESC'])) {
-            $order = 'ASC';
+        $result = [
+            "data"=> [],
+            "error"=> ""
+        ];
+        try {
+                // Validate order
+            $order = strtoupper($order);
+            if (!in_array($order, ['ASC', 'DESC'])) {
+                $order = 'ASC';
+            }
+
+            $sql = "SELECT ".
+                    "c.comment_id, ".
+                    "c.contenuto, ".
+                    "c.data_creazione, ".
+                    "u.username, ".
+                    "COUNT(lc.user_id) AS like_count ".
+                    "FROM Comment c ".
+                    "JOIN User u ON c.user_id = u.user_id ".
+                    "LEFT JOIN Like_Comment lc ON c.comment_id = lc.comment_id ".
+                    "WHERE c.post_id = ? ".
+                    "GROUP BY c.comment_id ".
+                    "ORDER BY c.data_creazione $order ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare failed: " . $this->db->error);
+            }
+
+            $stmt->bind_param("i", $post_id);
+            $stmt->execute();
+
+            $result_q = $stmt->get_result();
+            $comments = $result_q->fetch_all(MYSQLI_ASSOC);
+            
+            $stmt->close();
+            $result["data"] = $comments;
+            
+        } catch (Exception $e) {
+            $result['error'] = $e->getMessage();
         }
-
-        $sql = "SELECT ".
-                "c.comment_id, ".
-                "c.contenuto, ".
-                "c.data_creazione, ".
-                "u.username, ".
-                "COUNT(lc.user_id) AS like_count ".
-                "FROM Comment c ".
-                "JOIN User u ON c.user_id = u.user_id ".
-                "LEFT JOIN Like_Comment lc ON c.comment_id = lc.comment_id ".
-                "WHERE c.post_id = ? ".
-                "GROUP BY c.comment_id ".
-                "ORDER BY c.data_creazione $order ";
-
-        $stmt = $this->db->prepare($sql);
-        if (!$stmt) {
-            die("Prepare failed: " . $this->db->error);
-        }
-
-        $stmt->bind_param("i", $post_id);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-        $comments = $result->fetch_all(MYSQLI_ASSOC);
-
-        $stmt->close();
-        return $comments;
+        return $result;
     }
 
 
@@ -212,62 +300,6 @@ class DatabaseHelper{
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function insertArticle($titoloarticolo, $testoarticolo, $anteprimaarticolo, $dataarticolo, $imgarticolo, $autore){
-        $query = "INSERT INTO articolo (titoloarticolo, testoarticolo, anteprimaarticolo, dataarticolo, imgarticolo, autore) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('sssssi',$titoloarticolo, $testoarticolo, $anteprimaarticolo, $dataarticolo, $imgarticolo, $autore);
-        $stmt->execute();
-        
-        return $stmt->insert_id;
-    }
-
-    public function updateArticleOfAuthor($idarticolo, $titoloarticolo, $testoarticolo, $anteprimaarticolo, $imgarticolo, $autore){
-        $query = "UPDATE articolo SET titoloarticolo = ?, testoarticolo = ?, anteprimaarticolo = ?, imgarticolo = ? WHERE idarticolo = ? AND autore = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('ssssii',$titoloarticolo, $testoarticolo, $anteprimaarticolo, $imgarticolo, $idarticolo, $autore);
-        
-        return $stmt->execute();
-    }
-
-    public function deleteArticleOfAuthor($idarticolo, $autore){
-        $query = "DELETE FROM articolo WHERE idarticolo = ? AND autore = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('ii',$idarticolo, $autore);
-        $stmt->execute();
-        var_dump($stmt->error);
-        return true;
-    }
-
-    public function insertCategoryOfArticle($articolo, $categoria){
-        $query = "INSERT INTO articolo_ha_categoria (articolo, categoria) VALUES (?, ?)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('ii',$articolo, $categoria);
-        return $stmt->execute();
-    }
-
-    public function deleteCategoryOfArticle($articolo, $categoria){
-        $query = "DELETE FROM articolo_ha_categoria WHERE articolo = ? AND categoria = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('ii',$articolo, $categoria);
-        return $stmt->execute();
-    }
-
-    public function deleteCategoriesOfArticle($articolo){
-        $query = "DELETE FROM articolo_ha_categoria WHERE articolo = ?";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i',$articolo);
-        return $stmt->execute();
-    }
-
-    public function getAuthors(){
-        $query = "SELECT username, nome, GROUP_CONCAT(DISTINCT nomecategoria) as argomenti FROM categoria, articolo, autore, articolo_ha_categoria WHERE idarticolo=articolo AND categoria=idcategoria AND autore=idautore AND attivo=1 GROUP BY username, nome";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-
     public function userExists($username){
         $query = "SELECT user_id FROM user WHERE username = ?";
         $stmt = $this->db->prepare($query);
@@ -278,23 +310,30 @@ class DatabaseHelper{
         return count($result) != 0;
     }
 
-    public function checkLogin($username, $password){
+    public function checkLogin($username, $password)
+    {
+        $result = [
+            'data'  => [],
+            "error"=> ""
+        ];
+                
         $query = "SELECT user_id, username, password_hash FROM user WHERE username = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('s',$username);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $result = $result->fetch_all(MYSQLI_ASSOC);
+        $result_q = $stmt->get_result();
+        $result_q = $result_q->fetch_all(MYSQLI_ASSOC);
         
         //se è stato trovato l'user:
-        if(isset($result["password_hash"])){
+        if(isset($result_q[0]["password_hash"])){
             //controlliamo se la password è corretta
-            if(password_verify($password,$result["password_hash"])){
-                unset($result['password_hash']);
+            if(password_verify($password,$result_q[0]["password_hash"])){
+                $result['data']["user_id"] = $result_q[0]["user_id"];
+                $result['data']["username"] = $result_q[0]["username"];
             } else {
-                $result = [];
+                $result['error'] = "dataerror";
             }
-        }
+        } else {$result['error'] = "err";}
 
         return $result;
     }    

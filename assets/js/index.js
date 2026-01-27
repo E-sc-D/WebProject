@@ -103,6 +103,197 @@ async function evLogin(username, password) {
     }
 }
 
+async function evLogout() {
+    const url = '../api-logout.php';
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                loadWaitScreen();
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                break;
+            case "dataerror":
+                writeInLoginError("password e/o username invalidi");
+                break;
+            case "missingdata":
+                writeInLoginError("inserire sia la password che l'utente");
+                break;
+            default:
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+async function evToggleLike(post_id,like_path){
+    const url = `../api-togglelike.php?post_id=${post_id}`;
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                likenum = document.querySelector(like_path);
+                switch (json["data"]) {
+                    case "on":
+                        likenum.innerText = Number(likenum.innerText) + 1; 
+                        break;
+                    case "off":
+                        likenum.innerText = Number(likenum.innerText) - 1; 
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+async function getPostComments(url,posts_path) {
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+        const json = await response.json();
+
+        let doc = "";
+
+        
+        switch (json["error"]) {
+            case "nologin":
+                generaLoginPage()
+                throw new Error("no login");
+        
+            default:
+                break;
+        }
+        
+        json["data"].forEach(element => {
+            doc += `ciao`//qua ci va l'html dei commenti
+        });
+        
+        document.querySelector(posts_path).innerHTML = doc;
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+async function getPostPage(url) {
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+        const json = await response.json();
+
+        let doc = "";
+
+        
+        switch (json["error"]) {
+            case "nologin":
+                generaLoginPage()
+                throw new Error("no login");
+        
+            default:
+                break;
+        }
+        
+        doc = `<article class="card mb-4">
+                <div class="card-body">
+
+                    <!-- TITLE + REPORT -->
+                    <div class="d-flex justify-content-between align-items-start">
+                    <h2 class="card-title mb-0" id="post-title">
+                        ${json["data"][0]["titolo"]}
+                    </h2>
+
+                    <span
+                        class="text-danger small report-post"
+                        role="button"
+                    >
+                        Report
+                    </span>
+                    </div>
+
+                    <!-- META -->
+                    <div class="text-muted mb-3">
+                    By <span id="post-author">${json["data"][0]["username"]}</span> ·
+                        <span id="post-date">${json["data"][0]["data_creazione"]}</span>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <p class="card-text" id="post-content">
+                        ${json["data"][0]["testo"]}
+                    </p>
+
+                    <!-- ACTIONS -->
+                    <div class="d-flex align-items-center gap-3 text-muted small">
+
+                    <!-- LIKE POST -->
+                    <span
+                        class="like-post"
+                        role="button"
+                        data-post-id="POST_ID"
+                    >
+                        👍 <span class="post-like-count">${json["data"][0]["like_count"]}</span>
+                    </span>
+
+                    <!-- COMMENT COUNT -->
+                    <span>
+                        💬 <span id="post-comments-count">${json["data"][0]["comment_count"]}</span>
+                    </span>
+
+                    <!-- REPORT -->
+                    <span
+                        class="text-danger report-post"
+                        role="button"
+                    >
+                        Report
+                    </span>
+
+                    </div>
+                    <h3 style="color:white">Comments section</h3>
+                    <div class="d-flex align-items-center gap-3 text-muted small">
+                        
+                    </div>
+
+                </div>
+            </article>
+            `
+        writeInPage(doc);
+        document.querySelector("span.like-post").addEventListener("click",() => {
+            evToggleLike(json["data"][0]["post_id"]," span.like-post > span ");
+        });
+        getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
+            "#layoutSidenav_content > main > article > div > div:nth-child(6)");
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 async function getPostsPage(url) {
     try {
@@ -147,38 +338,50 @@ async function getPostsPage(url) {
                         </div>
                     </div>
                 </div>
-            </div>
-            <button
+            </div>`;  
+            /*<button
                 type="button"
                 class="btn btn-warning rounded-circle fab-add"
             >
                 +
-            </button> `;                    
+            </button>*/                 
         });
         writeInPage(doc);
+        for (let i = 0; i < json["data"].length; i++) {
+            document.querySelector(`#layoutSidenav_content > main > div:nth-child(${i+1})`)
+                .addEventListener("click",function(){
+                    loadWaitScreen();
+                    getPostPage(`../api-post-id.php?post_id=${json["data"][i]["post_id"]}`)
+                });
+        }
     } catch (error) {
         console.log(error.message);
     }
+}
+
+async function getMyPostsPage(){
+    
 }
 
 //costruisce una pagina senza bisogno di ricevere dati
 async function generaLoginPage() {
     // Utente NON loggato
     let form = `<form action="#" method="POST">
-        <h2>Login</h2>
-        <p></p>
-        <ul>
-            <li>
-                <label for="username">Username:</label><input type="text" id="username" name="username" />
-            </li>
-            <li>
-                <label for="password">Password:</label><input type="password" id="password" name="password" />
-            </li>
-            <li>
-                <input type="submit" name="submit" value="Invia" />
-            </li>
-        </ul>
-    </form>`;
+                    <h2>Login</h2>
+                    <p></p>
+                    <ul>
+                        <li>
+                            <label for="username">Username:</label><input type="text" id="username" name="username" />
+                        </li>
+                        <li>
+                            <label for="password">Password:</label><input type="password" id="password" name="password" />
+                        </li>
+                        <li>
+                            <input type="submit" name="submit" value="Invia" />
+                        </li>
+                    </ul>
+                </form>
+                <button>registrati</button>`;
     writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main form").addEventListener("submit", function (event) {
@@ -187,6 +390,7 @@ async function generaLoginPage() {
         const password = document.querySelector("#password").value;
         evLogin(username, password);
     });
+    document.querySelector("main button").addEventListener("click",generaSignInPage);
 }
 
 async function generaSignInPage() {
@@ -223,17 +427,32 @@ document.querySelector("main button")
         getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
     });
 
-/* document.querySelector("main button")
+//get Dashboard
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
     .addEventListener("click",function(){
-        loadWaitScreen();
-        generaSignInPage();
-    }); */
-        
+    loadWaitScreen();
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+});
+//get settings
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
+    .addEventListener("click",function(){
+    loadWaitScreen();
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+});
+//get feed
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
+    .addEventListener("click",function(){
+    loadWaitScreen();
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+});
 
-/* document.querySelector("main button").addEventListener("click", function(e){
-    getData("../api-comments-of-post.php?post_id=1&order=DESC");
-}); */
+//logout
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(4)")
+    .addEventListener("click",function(){
+    evLogout();
+    generaLoginPage();
+});
 
-/* const url = `../api-post.php?limit=5&offset=0&order=asc&filter=date&id=0`;
-    const url = "../api-comments-of-post.php?post_id=1&order=DESC" */
+getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+
 
