@@ -118,17 +118,22 @@ class DatabaseHelper{
                     if ($id === null) {
                         throw new Exception("User ID must be provided for 'my_posts' filter.");
                     }
-                    $sql = "SELECT ".
-                            "p.post_id, ".
-                            "p.titolo, ".
-                            "p.testo, ".
-                            "p.data_creazione, ".
-                            "u.username ".
-                        "FROM Post p ".
-                        "JOIN User u ON p.user_id = u.user_id ".
-                        "WHERE p.user_id = ? ".
-                        "ORDER BY p.data_creazione $order ".
-                        "LIMIT ? OFFSET ? ";
+                    $sql =  "SELECT ".
+                            "p.post_id,".
+                            "p.titolo,".
+                            "p.testo,".
+                            "p.data_creazione,".
+                            "u.username, ".
+                            "COUNT(DISTINCT lp.user_id) AS like_count, ".
+                            "COUNT(DISTINCT c.comment_id) AS comment_count ".
+                            "FROM Post p ".
+                            "WHERE p.user_id = ? ".
+                            "JOIN User u ON p.user_id = u.user_id ".
+                            "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                            "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "GROUP BY p.post_id ".
+                            "ORDER BY p.data_creazione $order ".
+                            "LIMIT ? OFFSET ?";
                     
                     $stmt = $this->db->prepare($sql);
                     $stmt->bind_param("iii", $id, $limit, $offset);

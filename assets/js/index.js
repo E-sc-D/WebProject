@@ -574,6 +574,6 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-ch
     generaLoginPage();
 });
 
-getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all");
 
 

@@ -10,7 +10,7 @@ if (isUserLoggedIn()){
     $_GET["offset"],
     $_GET["order"],
     $_GET["filter"],
-    $_GET["id"]
+    $_SESSION["user_id"]
     );
     //controllo di esito della query
     switch ($queryResult["error"]) {        
