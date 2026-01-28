@@ -194,27 +194,41 @@ async function evAddComment(comment_selector,post_id){
     }
 }
 
-async function evUpdateUser(comment_selector,post_id){
-    //comment selector deve andare a prendere il testo del commento
-    const testo = "commento di prova";
-    const url = `../api-add-comment-post.php?post_id=${post_id}&text=${testo}`;
+async function evUpdateUser(username, email, bio = ""){
+    const url = '../api-update-user-info.php';
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('bio', bio);
+    formData.append('email', email);
+    //si potrebbe aggiungere un controllo preventivo per i dati
     try {
-
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: "POST",                   
+            body: formData
+        });
 
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
         const json = await response.json();
+
         switch (json["error"]) {
+            case "missingdata":
+                writeInLoginError("devi completare tutti i campi");
+                break;
+
+            case "baddata":
+                writeInLoginError("errore con i dati inseriti");
+                break;
             case "":
-                
+                //sends a positive feedback
+                loadWaitScreen();
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
                 break;
             default:
-                console.log(json["error"]);
+                writeInLoginError(json["error"]);
                 break;
         }
-        
     } catch (error) {
         console.log(error.message);
     }
@@ -223,29 +237,52 @@ async function evUpdateUser(comment_selector,post_id){
 
 async function getUserPage(url){
     try {
-        const response = await fetch(url);
+            const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error("Response status: " + response.status);
-        }
+            if (!response.ok) {
+                throw new Error("Response status: " + response.status);
+            }
 
-        const json = await response.json();
+            const json = await response.json();
 
-        let doc = "";
+            let form = `<form action="#" method="POST">
+                            <h2>Dati utenti</h2>
+                            <p></p>
+                            <ul>
+                                <li>
+                                    <label for="username">Username:</label><input type="text" id="username" name="username" />
+                                </li>
+                                <li>
+                                    <label for="email">Email:</label><input type="text" id="email" name="email" />
+                                </li>
+                                <li>
+                                    <label for="bio">Bio:</label><input type="text" id="bio" name="bio" />
+                                </li>
+                                <li>
+                                    <input type="submit" name="submit" value="Invia" />
+                                </li>
+                            </ul>
+                        </form>`;
+            
 
-        
-        switch (json["error"]) {
-            case "nologin":
-                generaLoginPage()
-                throw new Error("no login");
-        
-            default:
-                break;
-        }
-        
-        console.log(json);
-        //document.querySelector(posts_path).innerHTML = doc;
-        
+            
+            switch (json["error"]) {
+                case "nologin":
+                    generaLoginPage()
+                    throw new Error("no login");
+            
+                default:
+                    writeInPage(form);
+                    document.querySelector("main form").addEventListener("submit", function (event) {
+                        event.preventDefault();
+                        const username = document.querySelector("#username").value;
+                        const email = document.querySelector("#email").value;
+                        const bio = document.querySelector("#bio").value;
+                        evUpdateUser(username, email,bio);
+                    });
+                    break;
+                            
+            } 
     } catch (error) {
         console.log(error.message);
     }

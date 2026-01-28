@@ -507,23 +507,19 @@ class DatabaseHelper{
         return $result;
     }
 
-    function updateUser(int $userId, string $username, string $email, ?string $bio): array
+    function updateUserInfo(int $userId, string $username, string $email, ?string $bio): array
     {
         $result = [
             "data"  => [],
-            "error" => null
+            "error" => ""
         ];
 
         try {
-            // basic validation
-            if (trim($username) === "" || trim($email) === "") {
-                throw new Exception("Username and email are required");
-            }
-
+            
             $sql = "
                 UPDATE User
                 SET username = ?, email = ?, bio = ?
-                WHERE id = ?
+                WHERE user_id = ?
             ";
 
             $stmt = $this->db->prepare($sql);

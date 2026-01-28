@@ -5,15 +5,14 @@ $response["error"] = "";
 $response["data"] = "";
 //controllo di condizioni di accesso al database
 if (isUserLoggedIn()) {
-    if(isValidString($_GET["user_id"] ?? null) &&
-        isValidString($_GET["username"] ?? null) && 
-        isValidString($_GET["email"] ?? null) &&
-        isValidString($_GET["bio"] ?? null)){
-        $queryResult = $dbh->updateUser(
-            $_GET["user_id"],
-            $_GET["username"],
-            $_GET["email"],
-            $_GET["bio"]
+    if( isValidString($_POST["username"] ?? null) && 
+        isValidString($_POST["email"] ?? null) &&
+        isValidString($_POST["bio"] ?? null)){
+        $queryResult = $dbh->updateUserInfo(
+            $_SESSION["user_id"],
+            $_POST["username"],
+            $_POST["email"],
+            $_POST["bio"]
             );
         //controllo di esito della query
         switch ($queryResult["error"]) {
