@@ -310,7 +310,22 @@ async function getPostComments(url,posts_path) {
         }
         
         json["data"].forEach(element => {
-            doc += `ciao`//qua ci va l'html dei commenti
+            doc += `<div class="card spotted-comment mb-3">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="comment-user">anonimo</span>
+                                            <span class="comment-time">2h fa</span>
+                                        </div>
+                                        <p class="comment-text mb-1">
+                                            lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn-like-sm">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>`//qua ci va l'html dei commenti
         });
         
         document.querySelector(posts_path).innerHTML = doc;
@@ -342,74 +357,43 @@ async function getPostPage(url) {
                 break;
         }
         
-        doc = `<article class="card mb-4">
-                <div class="card-body">
-
-                    <!-- TITLE + REPORT -->
-                    <div class="d-flex justify-content-between align-items-start">
-                    <h2 class="card-title mb-0" id="post-title">
-                        ${json["data"][0]["titolo"]}
-                    </h2>
-
-                    <span
-                        class="text-danger small report-post"
-                        role="button"
-                    >
-                        Report
-                    </span>
-                    </div>
-
-                    <!-- META -->
-                    <div class="text-muted mb-3">
-                    By <span id="post-author">${json["data"][0]["username"]}</span> ·
-                        <span id="post-date">${json["data"][0]["data_creazione"]}</span>
-                    </div>
-
-                    <!-- CONTENT -->
-                    <p class="card-text" id="post-content">
-                        ${json["data"][0]["testo"]}
-                    </p>
-
-                    <!-- ACTIONS -->
-                    <div class="d-flex align-items-center gap-3 text-muted small">
-
-                    <!-- LIKE POST -->
-                    <span
-                        class="like-post"
-                        role="button"
-                        data-post-id="POST_ID"
-                    >
-                        👍 <span class="post-like-count">${json["data"][0]["like_count"]}</span>
-                    </span>
-
-                    <!-- COMMENT COUNT -->
-                    <span>
-                        💬 <span id="post-comments-count">${json["data"][0]["comment_count"]}</span>
-                    </span>
-
-                    <!-- REPORT -->
-                    <span
-                        class="text-danger report-post"
-                        role="button"
-                    >
-                        Report
-                    </span>
-
-                    </div>
-                    <h3 style="color:white">Comments section</h3>
-                    <div class="d-flex align-items-center gap-3 text-muted small">
-                        
-                    </div>
-
-                </div>
-            </article>
-            `
+        doc = `<article class="container-fluid py-4 spotted-wrapper">
+                        <div class="row-singolo justify-content-center">
+                            <div class="col-lg-5 mb-4">
+                                <div class="card spotted-post">
+                                    <div class="card-body d-flex flex-column h-100">
+                                        <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                                            <span class="spotted-time">2h fa</span>
+                                            <span class="btn-report" role="button">
+                                                <i class="fa-regular fa-flag"></i>
+                                            </span>
+                                            <span role="button" class="btn-like like-post">
+                                                <i class="far fa-heart "></i><span class="post-like-count">${json["data"][0]["like_count"]}</span>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                                            <p class="spotted-text text-center m-0">
+                                                ${json["data"][0]["testo"]}
+                                            </p>
+                                        </div>
+                                        <div class="spotted-footer-buttons">
+                                            <button type="button" class="btn btn-warning btn-respond">
+                                                Respond
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                            </div>
+                        </div>
+                    </article>`
         writeInPage(doc);
         document.querySelector("span.like-post").addEventListener("click",() => {
             evToggleLike(json["data"][0]["post_id"]," span.like-post > span ");
         });
         getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
-            "#layoutSidenav_content > main > article > div > div:nth-child(6)");
+            "#layoutSidenav_content > main > article > div > div:nth-child(2)");
     } catch (error) {
         console.log(error.message);
     }
@@ -487,22 +471,42 @@ async function getMyPostsPage(){
 //costruisce una pagina senza bisogno di ricevere dati
 async function generaLoginPage() {
     // Utente NON loggato
-    let form = `<form action="#" method="POST">
-                    <h2>Login</h2>
-                    <p></p>
-                    <ul>
-                        <li>
-                            <label for="username">Username:</label><input type="text" id="username" name="username" />
-                        </li>
-                        <li>
-                            <label for="password">Password:</label><input type="password" id="password" name="password" />
-                        </li>
-                        <li>
-                            <input type="submit" name="submit" value="Invia" />
-                        </li>
-                    </ul>
-                </form>
-                <button>registrati</button>`;
+    let form = `<div class="login-card">
+                    <h3 class="mb-3 text-center">Accedi</h3>
+                    <form action="#" method="POST">
+                        <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="username"
+                            placeholder="Inserisci l'username"
+                            required
+                        />
+                        </div>
+                        <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            placeholder="Inserisci la password"
+                            required
+                        />
+                        </div>
+                        <!-- <div class="mb-3 form-check">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="remember"
+                        />
+                        <label class="form-check-label" for="remember">Ricordami</label>
+                        </div> -->
+                        <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100">
+                        Accedi
+                        </button>
+                    </form>
+                </div>`;
     writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main form").addEventListener("submit", function (event) {
@@ -516,21 +520,53 @@ async function generaLoginPage() {
 
 async function generaSignInPage() {
     // Utente NON loggato
-    let form = `<form action="#" method="POST">
-        <h2>Registrazione</h2>
-        <p></p>
-        <ul>
-            <li>
-                <label for="username">Username:</label><input type="text" id="username" name="username" />
-            </li>
-            <li>
-                <label for="password">Password:</label><input type="password" id="password" name="password" />
-            </li>
-            <li>
-                <input type="submit" name="submit" value="Invia" />
-            </li>
-        </ul>
-    </form>`;
+    let form =`<div class="login-card">
+        <h3 class="mb-3 text-center">Registrazione</h3>
+        <form action="#" method="POST">
+            <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+                type="text"
+                class="form-control"
+                id="username"
+                placeholder="Inserisci l'username"
+                required
+            />
+            </div>
+            <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="email"
+                            placeholder="Inserisci l'email"
+                            required
+                        />
+
+                        </div>
+            <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Inserisci la password"
+                required
+            />
+            </div>
+            <!-- <div class="mb-3 form-check">
+            <input
+                type="checkbox"
+                class="form-check-input"
+                id="remember"
+            />
+            <label class="form-check-label" for="remember">Ricordami</label>
+            </div> -->
+            <button type="submit" name="submit" value="Invia" class="btn btn-primary w-100">
+            Registrati
+            </button>
+        </form>
+    </div>`;
     writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main form").addEventListener("submit", function (event) {
