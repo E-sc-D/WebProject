@@ -20,8 +20,6 @@ if (isUserLoggedIn()) {
             $pid,
             //ordine specificabile
         );
-        echo json_encode($queryResult);
-        exit();
         //controllo di esito della query
         switch ($queryResult["error"]) {
             case '':

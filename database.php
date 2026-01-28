@@ -185,6 +185,69 @@ class DatabaseHelper{
         return $result;
     }
 
+    function toggleCommentLike(int $userId, int $commentId): array
+    {
+        $result = [
+            "data"  => null,
+            "error"=> null
+        ];
+
+        try {
+            $checkSql = "
+                SELECT 1
+                FROM like_comment
+                WHERE user_id = ? AND comment_id = ?
+                LIMIT 1
+            ";
+
+            $stmt = $this->db->prepare($checkSql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $commentId);
+            $stmt->execute();
+            $stmt->store_result();
+
+            $likeExists = $stmt->num_rows > 0;
+            $stmt->close();
+
+            if ($likeExists) {
+                // REMOVE LIKE
+                $sql = "
+                    DELETE FROM like_comment
+                    WHERE user_id = ? AND comment_id = ?
+                ";
+
+                $state = "off"; // OFF
+            } else {
+                // ADD LIKE
+                $sql = "
+                    INSERT INTO like_comment (user_id, comment_id)
+                    VALUES (?, ?)
+                ";
+
+                $state = "on"; // ON
+            }
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $commentId);
+            $stmt->execute();
+            $stmt->close();
+
+            $result['data'] = $state;
+              
+        } catch (Exception $e) {
+            $result['error'] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
     function togglePostLike(int $userId, int $postId): array
     {
         $result = [
@@ -193,7 +256,6 @@ class DatabaseHelper{
         ];
 
         try {
-            // 1️⃣ Check if like already exists
             $checkSql = "
                 SELECT 1
                 FROM Like_Post
@@ -213,7 +275,6 @@ class DatabaseHelper{
             $likeExists = $stmt->num_rows > 0;
             $stmt->close();
 
-            // 2️⃣ Toggle
             if ($likeExists) {
                 // REMOVE LIKE
                 $sql = "
@@ -254,7 +315,7 @@ class DatabaseHelper{
    /*  ../api-post.php?limit=5&offset=0&order=asc&filter=date&id=0 */
     function getCommentsByPost(
         int $post_id,
-        string $order = 'ASC'){
+        string $order = 'DESC'){
         
         $result = [
             "data"=> [],
@@ -454,13 +515,30 @@ class DatabaseHelper{
 
             $stmt->bind_param("iis", $post_id, $user_id, $text);
             $stmt->execute();
+            $post_id = $this->db->insert_id;
+            $sql = "SELECT ".
+                    "c.comment_id, ".
+                    "c.contenuto, ".
+                    "c.data_creazione, ".
+                    "u.username, ".
+                    "COUNT(lc.user_id) AS like_count ".
+                    "FROM Comment c ".
+                    "JOIN User u ON c.user_id = u.user_id ".
+                    "LEFT JOIN Like_Comment lc ON c.comment_id = lc.comment_id ".
+                    "WHERE c.comment_id = ? ".
+                    "GROUP BY c.comment_id ";
 
-            // 4️⃣ Return inserted data
-            $result["data"] = [
-                "comment_id" => $stmt->insert_id,
-                "post_id"    => $post_id,
-                "text"       => $text
-            ];
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("i",$post_id);
+            $stmt->execute();
+            $qresult = $stmt->get_result();
+            $qresult = $qresult->fetch_all(MYSQLI_ASSOC);
+
+            $result["data"] = $qresult;
 
             $stmt->close();
 
