@@ -553,7 +553,7 @@ class DatabaseHelper{
     {
         $result = [
             "data"  => [],
-            "error" => null
+            "error" => ""
         ];
 
         try {

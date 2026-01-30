@@ -2,7 +2,7 @@
 require_once 'bootstrap.php';
 
 $response["error"] = "";
-$response["data"] = "";
+$response["data"] = [];
 //controllo di condizioni di accesso al database
 
 if (isUserLoggedIn()) {

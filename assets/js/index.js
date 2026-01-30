@@ -291,13 +291,13 @@ async function getUserPage(url){
                             <p></p>
                             <ul>
                                 <li>
-                                    <label for="username">Username:</label><input type="text" id="username" name="username" />
+                                    <label for="username">Username:</label><input type="text" id="username" name="username" value ="${json["data"]["username"]}" />
                                 </li>
                                 <li>
-                                    <label for="email">Email:</label><input type="text" id="email" name="email" />
+                                    <label for="email">Email:</label><input type="text" id="email" name="email" value ="${json["data"]["email"]}" />
                                 </li>
                                 <li>
-                                    <label for="bio">Bio:</label><input type="text" id="bio" name="bio" />
+                                    <label for="bio">Bio:</label><input type="text" id="bio" name="bio" value ="${json["data"]["bio"]}"/>
                                 </li>
                                 <li>
                                     <input type="submit" name="submit" value="Invia" />
@@ -321,6 +321,7 @@ async function getUserPage(url){
                         const bio = document.querySelector("#bio").value;
                         evUpdateUser(username, email,bio);
                     });
+                    getMyPostsPage
                     break;
                             
             } 
@@ -513,7 +514,7 @@ async function getPostsPage(url) {
     }
 }
 
-async function getMyPostsPage(){
+async function getMyPosts(){
 
 }
 
