@@ -428,7 +428,7 @@ async function getPostPage(url) {
                                             </p>
                                         </div>
                                         <div class="spotted-footer-buttons">
-                                            <button type="button" class="btn btn-warning btn-respond">
+                                            <button type="button" class="btn btn-warning btn-respond" id="btnRespond"">
                                                 Respond
                                             </button>
                                         </div>
@@ -436,15 +436,50 @@ async function getPostPage(url) {
                                 </div>
                             </div>
                             <div class="col-lg-5">
+                                <div class="card spotted-comment mb-3" id="commentFormWrapper" style="display: none;">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="comment-user">anonimo</span>
+                                            <span class="comment-time">Ora</span>
+                                        </div>
+                                        <form id="commentForm">
+                                            <textarea
+                                                class="form-control mb-2"
+                                                id="commentTextInput"
+                                                rows="3"
+                                                placeholder="Scrivi il tuo commento..."
+                                                required
+                                            ></textarea>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelComment">
+                                                    Annulla
+                                                </button>
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    Invia
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                    <!-- LISTA COMMENTI -->
+                                    <div id="commentsList">
+                                        
+                                    </div>
                             </div>
                         </div>
                     </article>`
         writeInPage(doc);
         document.querySelector("span.like-post").addEventListener("click",() => {
-            evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`," span.like-post > span ");
+            evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
+        });
+        
+        document.querySelector("button.btn-respond").addEventListener("click",() =>{
+            evAddComment(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
+            "#commentsList");
         });
         getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
-            "#layoutSidenav_content > main > article > div > div:nth-child(2)");
+            "#commentsList");
     } catch (error) {
         console.log(error.message);
     }
@@ -566,6 +601,7 @@ async function generaLoginPage() {
         const password = document.querySelector("#password").value;
         evLogin(username, password);
     });
+    document.querySelector("main button").addEventListener("click",generaSignInPage);
 }
 
 async function generaSignInPage() {
@@ -623,7 +659,8 @@ async function generaSignInPage() {
         event.preventDefault();
         const username = document.querySelector("#username").value;
         const password = document.querySelector("#password").value;
-        evSignIn(username, password);
+        const email = document.querySelector("#email").value;
+        evSignIn(username, password,email);
     });
 }
 
