@@ -436,7 +436,7 @@ async function getPostPage(url) {
                                 </div>
                             </div>
                             <div class="col-lg-5">
-                                <div class="card spotted-comment mb-3" id="commentFormWrapper" style="display: none;">
+                                 <div class="card spotted-comment mb-3" id="commentFormWrapper" style="display: none;">
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="comment-user">anonimo</span>
@@ -472,10 +472,10 @@ async function getPostPage(url) {
         writeInPage(doc);
         document.querySelector("span.like-post").addEventListener("click",() => {
             evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
-        });
-        
-        document.querySelector("button.btn-respond").addEventListener("click",() =>{
-            evAddComment(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
+                    });
+                    
+                    document.querySelector("button.btn-respond").addEventListener("click",() =>{
+                        evAddComment(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
             "#commentsList");
         });
         getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
@@ -588,8 +588,11 @@ async function generaLoginPage() {
                         />
                         <label class="form-check-label" for="remember">Ricordami</label>
                         </div> -->
-                        <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100">
+                        <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">
                         Accedi
+                        </button>
+                        <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 registration-button mt-2">
+                        Registrati
                         </button>
                     </form>
                 </div>`;
@@ -601,7 +604,7 @@ async function generaLoginPage() {
         const password = document.querySelector("#password").value;
         evLogin(username, password);
     });
-    document.querySelector("main button").addEventListener("click",generaSignInPage);
+    document.querySelector("main div .registration-button").addEventListener("click",generaSignInPage);
 }
 
 async function generaSignInPage() {
@@ -648,7 +651,10 @@ async function generaSignInPage() {
             />
             <label class="form-check-label" for="remember">Ricordami</label>
             </div> -->
-            <button type="submit" name="submit" value="Invia" class="btn btn-primary w-100">
+            <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">
+            Accedi
+            </button>
+            <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 registration-button mt-2">
             Registrati
             </button>
         </form>
@@ -662,6 +668,7 @@ async function generaSignInPage() {
         const email = document.querySelector("#email").value;
         evSignIn(username, password,email);
     });
+    document.querySelector("main div .login-button").addEventListener("click",generaLoginPage);
 }
 
 
