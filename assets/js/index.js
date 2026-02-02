@@ -437,7 +437,7 @@ async function getPostPage(url) {
                                             </p>
                                         </div>
                                         <div class="spotted-footer-buttons">
-                                            <button type="button" class="btn btn-warning btn-respond" id="btnRespond"">
+                                            <button type="button" class="btn btn-warning btn-respond" id="btnRespond">
                                                 Respond
                                             </button>
                                         </div>
@@ -452,6 +452,9 @@ async function getPostPage(url) {
                                             <!-- <span class="comment-time"></span>-->
                                         </div>
                                         <form id="commentForm">
+                                            <label for="commentTextInput" class="form-label">
+                                                Aggiungi un commento:
+                                            </label>
                                             <textarea
                                                 class="form-control mb-2"
                                                 id="commentTextInput"
@@ -592,9 +595,14 @@ async function getPostsPage(url,path) {
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
-                                    <button type="button" class="btn btn-icon card-icon">
-                                        <i class="far fa-heart"></i>
+                                    <button
+                                        type="button"
+                                        class="btn btn-icon card-icon"
+                                        aria-label="Aggiungi ai preferiti"
+                                        aria-pressed="false">
+                                        <i class="far fa-heart" aria-hidden="true"></i>
                                     </button>
+
                                 </div>
                                 <div>
                                     <div class="mt-2 card-text">
@@ -658,7 +666,7 @@ async function addPost(url) {
 async function generaLoginPage() {
     // Utente NON loggato
     let form = `<div class="login-card">
-                    <h3 class="mb-3 text-center">Accedi</h3>
+                    <h2 class="mb-3 text-center">Accedi</h3>
                     <form action="#" method="POST">
                         <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
@@ -710,7 +718,7 @@ async function generaLoginPage() {
 async function generaSignInPage() {
     // Utente NON loggato
     let form =`<div class="login-card">
-        <h3 class="mb-3 text-center">Registrazione</h3>
+        <h2 class="mb-3 text-center">Registrazione</h2>
         <form action="#" method="POST">
             <div class="mb-3">
             <label for="username" class="form-label">Username</label>

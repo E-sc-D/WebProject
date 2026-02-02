@@ -46,7 +46,11 @@ body {
     align-items: center;
     justify-content: space-between;
 }
-
+.sb-topnav h1 {
+    color: var(--sb-primary);
+    font-size: 1.5rem;
+    margin: 0;
+}
 /* brand e bottone toggle inline a sinistra */
 .sb-topnav .navbar-brand,
 .sb-topnav #sidebarToggle {
@@ -189,7 +193,16 @@ body {
 }
 footer{
     background-color: var(--bg-primary);
+    
 }
+footer {
+    color: var(--text);
+}
+footer a {
+    color: var(--sb-primary);
+    text-decoration: none;
+}
+
 
 /* ==========================
    CONTENUTO (DESTRA)
@@ -284,7 +297,7 @@ body.sb-sidenav-toggled #layoutSidenav_content {
 
 /* testo mutato */
 .text-muted {
-    color: #6c757d !important;
+    color: var(--text);
 }
 
 /* demo: blocco altezza 100vh */
@@ -505,12 +518,12 @@ main {
 .btn-respond {
     padding: 10px 20px;
     border-radius: 50px;
-    font-size: 0.8rem;
+    background-color: #ff880024;
+    font-size: 14px;
+    padding: 0.8rem;
     font-weight: 500;
-
     color: var(--text);
-    background-color: var(--sb-primary);
-    border: none;
+    border-color: var(--sb-primary);
 }
 
 .btn-respond:hover {
@@ -604,7 +617,7 @@ main {
     justify-content: center;
     align-self: flex-start;
 }
-.login-card h3 {
+.login-card h2 {
     align-self: center;
     color: var(--sb-primary);
     margin-bottom: 1.5rem;
@@ -627,11 +640,12 @@ main {
     border-radius: 7px;
 }
 .login-card .btn-primary {
-    background-color: var(--sb-primary);
-    border-color: var(--sb-primary);
-    border-radius: 20px;
-    padding: 0.5rem;
-    font-weight: 600;
+    background-color: #ff880024;
+    border-color: #ff880024;
+    border-radius: 18px;
+    font-size: 18px;
+    padding: 0.8rem;
+    font-weight: 800;
     color: var(--text);
     margin-top: 50px;
 }
@@ -705,11 +719,12 @@ main {
     font-weight: 500;
     margin-top: 8px;
     color: var(--text);
-    background-color: var(--sb-primary);
+    background-color: #ff880024;
+    border-color: var(--sb-primary);
 }
 #commentForm div button:hover {
     background-color: var(--text); /* tonalità più chiara di arancione */
     color: var(--sb-primary);
-    border-color: var(--sb-primary);
+    
 }
 
