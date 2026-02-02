@@ -18,7 +18,7 @@ if (isUserLoggedIn()) {
             break;
         
         default:
-            # code...
+            $response["error"] = $queryResult["error"];
             break;
     } 
 } else {$response["error"] = "loginerror";}

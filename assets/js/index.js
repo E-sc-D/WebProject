@@ -38,7 +38,7 @@ function timeAgo(dateTimeString) {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
 }
 
-function writeInPage(content){
+async function writeInPage(content){
    document.querySelector("main").innerHTML = content; 
 } 
 function writeInLoginError(error) {
@@ -77,7 +77,7 @@ async function evSignIn(username, password,email) {
             case "":
                 //sends a positive feedback
                 loadWaitScreen();
-                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
             default:
                 writeInLoginError(json["error"]);
@@ -108,7 +108,7 @@ async function evLogin(username, password) {
         switch (json["error"]) {
             case "":
                 loadWaitScreen();
-                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
             case "dataerror":
                 writeInLoginError("password e/o username invalidi");
@@ -138,7 +138,7 @@ async function evLogout() {
         switch (json["error"]) {
             case "":
                 loadWaitScreen();
-                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
             case "dataerror":
                 writeInLoginError("password e/o username invalidi");
@@ -265,7 +265,7 @@ async function evUpdateUser(username, email, bio = ""){
             case "":
                 //sends a positive feedback
                 loadWaitScreen();
-                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
             default:
                 writeInLoginError(json["error"]);
@@ -286,24 +286,32 @@ async function getUserPage(url){
 
             const json = await response.json();
 
-            let form = `<form action="#" method="POST">
-                            <h2>Dati utenti</h2>
-                            <p></p>
-                            <ul>
-                                <li>
-                                    <label for="username">Username:</label><input type="text" id="username" name="username" value ="${json["data"]["username"]}" />
-                                </li>
-                                <li>
-                                    <label for="email">Email:</label><input type="text" id="email" name="email" value ="${json["data"]["email"]}" />
-                                </li>
-                                <li>
-                                    <label for="bio">Bio:</label><input type="text" id="bio" name="bio" value ="${json["data"]["bio"]}"/>
-                                </li>
-                                <li>
-                                    <input type="submit" name="submit" value="Invia" />
-                                </li>
-                            </ul>
-                        </form>`;
+            let form = `<div class="container-fluid px-4 ">
+                    <!-- Header profilo -->
+                        <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card ">
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <div class="position-relative mb-2">
+                                <span><i class="fa-solid fa-circle-user profile-avatar"></i></span>
+                                <span class="online-badge position-absolute"></span>
+                                </div>
+                                <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
+                                <div class="text-primary">${json["data"]["email"]}</div>
+                                <p class="text-secondary mb-3 mt-2">
+                                ${json["data"]["bio"]}
+                                </p>
+                                <!-- Statistiche -->
+                                <div class="d-flex gap-4 justify-content-center mb-2">
+                                    <div class="social-stat">
+                                        <span class="fw-bold fs-5">${json["data"]["npost"]}</span><br>
+                                        <small class="text-muted">Post</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="row g-4 card-row">
+                            
+                        </div>        
+                    </div>`;
             
 
             
@@ -314,6 +322,7 @@ async function getUserPage(url){
             
                 default:
                     writeInPage(form);
+                    getMyPosts("#layoutSidenav_content > main > div > div.row.g-4.card-row");
                     document.querySelector("main form").addEventListener("submit", function (event) {
                         event.preventDefault();
                         const username = document.querySelector("#username").value;
@@ -436,11 +445,11 @@ async function getPostPage(url) {
                                 </div>
                             </div>
                             <div class="col-lg-5">
-                                 <div class="card spotted-comment mb-3" id="commentFormWrapper" style="display: none;">
+                                 <div class="card spotted-comment mb-3" id="commentFormWrapper" hidden>
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="comment-user">anonimo</span>
-                                            <span class="comment-time">Ora</span>
+                                            <!--<span class="comment-user">anonimo</span>-->
+                                            <!-- <span class="comment-time"></span>-->
                                         </div>
                                         <form id="commentForm">
                                             <textarea
@@ -451,7 +460,7 @@ async function getPostPage(url) {
                                                 required
                                             ></textarea>
                                             <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-secondary btn-sm" id="btnCancelComment">
+                                                <button type="reset" class="btn btn-secondary btn-sm">
                                                     Annulla
                                                 </button>
                                                 <button type="submit" class="btn btn-success btn-sm">
@@ -469,23 +478,28 @@ async function getPostPage(url) {
                             </div>
                         </div>
                     </article>`
-        writeInPage(doc);
+
+        await writeInPage(doc);
+        
         document.querySelector("span.like-post").addEventListener("click",() => {
             evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
-                    });
-                    
-                    document.querySelector("button.btn-respond").addEventListener("click",() =>{
-                        evAddComment(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
-            "#commentsList");
-        });
-        getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,
-            "#commentsList");
+            });
+        document.querySelector("button.btn-respond").addEventListener("click",() =>{
+            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
+            });
+       
+        document.querySelector("#commentForm").addEventListener("submit",(event) =>{
+            event.preventDefault();
+            evAddComment("#commentsList",json["data"][0]["post_id"],document.querySelector("#commentTextInput").value);
+            document.querySelector("#commentTextInput").value = "";
+            }); 
+
+        getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,"#commentsList");    
     } catch (error) {
-        console.log(error.message);
+        console.log(error.stack);
     }
 }
-
-async function getPostsPage(url) {
+async function getCompactPostsPage(url,path) {
     try {
         const response = await fetch(url);
 
@@ -536,7 +550,7 @@ async function getPostsPage(url) {
                 +
             </button>*/                 
         });
-        writeInPage(doc);
+        document.querySelector(path).innerHTML = doc; 
         for (let i = 0; i < json["data"].length; i++) {
             document.querySelector(`#layoutSidenav_content > main > div:nth-child(${i+1})`)
                 .addEventListener("click",function(){
@@ -548,11 +562,97 @@ async function getPostsPage(url) {
         console.log(error.message);
     }
 }
+async function getPostsPage(url,path) {
+    try {
+        const response = await fetch(url);
 
-async function getMyPosts(){
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
 
+        const json = await response.json();
+
+        let doc = "";
+
+        switch (json["error"]) {
+            case "nologin":
+                generaLoginPage()
+                throw new Error("no login");
+        
+            default:
+                break;
+        }
+        
+        json["data"].forEach(element => {
+            doc += `
+            <div class="container-fluid py-4">
+                <div class="row g-4 card-row">
+                    <div class="col-6 col-lg-3">
+                        <div class="card shadow-sm h-100 custom-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                                    <button type="button" class="btn btn-icon card-icon">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <div class="mt-2 card-text">
+                                        <p>${element.testo}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;  
+            /*<button
+                type="button"
+                class="btn btn-warning rounded-circle fab-add"
+            >
+                +
+            </button>*/                 
+        });
+        document.querySelector(path).innerHTML = doc; 
+        for (let i = 0; i < json["data"].length; i++) {
+            document.querySelector(path + ` div:nth-child(${i+1})`)
+                .addEventListener("click",function(){
+                    loadWaitScreen();
+                    getPostPage(`../api-post-id.php?post_id=${json["data"][i]["post_id"]}`)
+                });
+        }
+    } catch (error) {
+        console.log(error.stack );
+        
+    }
 }
 
+async function getMyPosts(path){
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=my_posts",path);
+}
+
+async function addPost(url) {
+   try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("Response status: " + response.status);
+            }
+
+            const json = await response.json();
+
+            switch (json["error"]) {
+                case "nologin":
+                    generaLoginPage()
+                    throw new Error("no login");
+            
+                default:
+                    break;
+            }
+        } catch (error) {
+        console.log(error.message);
+    }
+}
 
 //costruisce una pagina senza bisogno di ricevere dati
 async function generaLoginPage() {
@@ -677,19 +777,19 @@ async function generaSignInPage() {
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
 //get settings
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
 //get feed
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0");
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
 
 //logout
@@ -699,6 +799,12 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-ch
     generaLoginPage();
 });
 
-getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all");
+document.querySelector("body > nav > a").addEventListener("click" ,function(){
+    getUserPage("../api-get-user.php");
+})
+
+document.querySelector*""
+
+getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all","main");
 
 

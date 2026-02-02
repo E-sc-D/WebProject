@@ -127,10 +127,10 @@ class DatabaseHelper{
                             "COUNT(DISTINCT lp.user_id) AS like_count, ".
                             "COUNT(DISTINCT c.comment_id) AS comment_count ".
                             "FROM Post p ".
-                            "WHERE p.user_id = ? ".
                             "JOIN User u ON p.user_id = u.user_id ".
                             "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "WHERE p.user_id = ? ".
                             "GROUP BY p.post_id ".
                             "ORDER BY p.data_creazione $order ".
                             "LIMIT ? OFFSET ?";
@@ -552,17 +552,25 @@ class DatabaseHelper{
     public function getUserById(int $userId): array
     {
         $result = [
-            "data"  => [],
+            "data"  => "ciao",
             "error" => ""
         ];
 
         try {
-            $sql = "
-                SELECT user_id, username, email, bio, created_at
-                FROM User
-                WHERE user_id = ?
-                LIMIT 1
-            ";
+            $sql ="SELECT u.user_id,".
+                "u.username,".
+                "u.email,". 
+                "u.bio,". 
+                "u.created_at,".
+                "COUNT(DISTINCT p.post_id) as npost,".
+                "COUNT(DISTINCT c.comment_id) as ncomment ".
+                "FROM User u ".
+                "JOIN Post p ON u.user_id = p.user_id ".
+                "JOIN Comment c ON u.user_id = c.user_id ".
+                "WHERE u.user_id = ? ".
+                "Group by user_id ".
+                "LIMIT 1 ";
+            
 
             $stmt = $this->db->prepare($sql);
             if (!$stmt) {
@@ -590,7 +598,7 @@ class DatabaseHelper{
         return $result;
     }
 
-    function updateUserInfo(int $userId, string $username, string $email, ?string $bio): array
+    public function updateUserInfo(int $userId, string $username, string $email, ?string $bio): array
     {
         $result = [
             "data"  => [],
@@ -626,10 +634,43 @@ class DatabaseHelper{
         }
 
         return $result;
-}
+    }
 
+    public function addPost($user_id,$text){
+        $result = [
+            "data"  => [],
+            "error" => ""
+        ];
 
+        try {
 
+            $text = trim($text);
+            if ($text === "") {
+                throw new Exception("Comment cannot be empty");
+            }
+
+           
+            $sql = "
+                INSERT INTO Post (user_id, testo)
+                VALUES (?,?)
+            ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("is",$user_id, $text);
+            $stmt->execute();
+            $post_id = $this->db->insert_id;
+            $this->getPostById($post_id);
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
+        }
+
+        return $result;
+    }
 
 }
 ?>
