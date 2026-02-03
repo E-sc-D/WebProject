@@ -255,7 +255,7 @@ body.sb-sidenav-toggled #layoutSidenav_content {
 }
 
 /* Mobile: sidebar tipo off-canvas */
-@media (max-width: 991.98px) {
+@media (max-width: 767.98px) {
     #layoutSidenav_nav {
         position: fixed;
         top: 56px; /* sotto la topnav */
@@ -633,6 +633,13 @@ main {
 /* ==========================
    STILE PER LoGIN PAGE
    ========================== */
+   .login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
 .login-card {
     max-width: 500px;
     padding: 2rem;

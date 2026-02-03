@@ -671,7 +671,9 @@ async function addPost(url) {
 //costruisce una pagina senza bisogno di ricevere dati
 async function generaLoginPage() {
     // Utente NON loggato
-    let form = `<div class="login-card">
+    let form = `
+    <div class="login-wrapper">
+        <div class="login-card">
                     <h2 class="mb-3 text-center">Accedi</h3>
                     <form action="#" method="POST">
                         <div class="mb-3">
@@ -709,7 +711,8 @@ async function generaLoginPage() {
                         Registrati
                         </button>
                     </form>
-                </div>`;
+                </div>
+            </div>`;
     writeInPage(form);
     // Gestisco tentativo di login
     document.querySelector("main div form").addEventListener("submit", function (event) {
@@ -723,55 +726,58 @@ async function generaLoginPage() {
 
 async function generaSignInPage() {
     // Utente NON loggato
-    let form =`<div class="login-card">
-        <h2 class="mb-3 text-center">Registrazione</h2>
-        <form action="#" method="POST">
-            <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input
-                type="text"
-                class="form-control"
-                id="username"
-                placeholder="Inserisci l'username"
-                required
-            />
-            </div>
-            <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input
-                            type="text"
-                            class="form-control"
-                            id="email"
-                            placeholder="Inserisci l'email"
-                            required
-                        />
+    let form =`
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2 class="mb-3 text-center">Registrazione</h2>
+            <form action="#" method="POST">
+                <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    placeholder="Inserisci l'username"
+                    required
+                />
+                </div>
+                <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="email"
+                                placeholder="Inserisci l'email"
+                                required
+                            />
 
-                        </div>
-            <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Inserisci la password"
-                required
-            />
-            </div>
-            <!-- <div class="mb-3 form-check">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="remember"
-            />
-            <label class="form-check-label" for="remember">Ricordami</label>
-            </div> -->
-            <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">
-            Accedi
-            </button>
-            <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 registration-button mt-2">
-            Registrati
-            </button>
-        </form>
+                            </div>
+                <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="Inserisci la password"
+                    required
+                />
+                </div>
+                <!-- <div class="mb-3 form-check">
+                <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="remember"
+                />
+                <label class="form-check-label" for="remember">Ricordami</label>
+                </div> -->
+                <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">
+                Accedi
+                </button>
+                <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 registration-button mt-2">
+                Registrati
+                </button>
+            </form>
+        </div>
     </div>`;
     writeInPage(form);
     // Gestisco tentativo di login
