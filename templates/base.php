@@ -7,13 +7,14 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Static Navigation - SB Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="style.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <!-- TOP NAVBAR -->
          <!-- <header> -->
-            <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <nav class="sb-topnav navbar navbar-expand navbar-dark">
                     <!-- Sidebar Toggle-->
                     <button
                         class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"

@@ -418,69 +418,93 @@ async function getPostPage(url) {
         }
         
         doc = `<article class="container-fluid py-4 spotted-wrapper">
-                        <div class="row-singolo justify-content-center">
-                            <div class="col-lg-5 mb-4">
-                                <div class="card spotted-post">
-                                    <div class="card-body d-flex flex-column h-100">
-                                        <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
-                                            <span class="spotted-time">${timeAgo(json["data"][0]["data_creazione"])}</span>
-                                            <span class="btn-report" role="button">
-                                                <i class="fa-regular fa-flag"></i>
-                                            </span>
-                                            <span role="button" class="btn-like like-post">
-                                                <i class="far fa-heart "></i><span class="post-like-count">${json["data"][0]["like_count"]}</span>
-                                            </span>
-                                        </div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                                            <p class="spotted-text text-center m-0">
-                                                ${json["data"][0]["testo"]}
-                                            </p>
-                                        </div>
-                                        <div class="spotted-footer-buttons">
-                                            <button type="button" class="btn btn-warning btn-respond" id="btnRespond">
-                                                Respond
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-5">
-                                 <div class="card spotted-comment mb-3" id="commentFormWrapper" hidden>
-                                    <div class="card-body d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <!--<span class="comment-user">anonimo</span>-->
-                                            <!-- <span class="comment-time"></span>-->
-                                        </div>
-                                        <form id="commentForm">
-                                            <label for="commentTextInput" class="form-label">
-                                                Aggiungi un commento:
-                                            </label>
-                                            <textarea
-                                                class="form-control mb-2"
-                                                id="commentTextInput"
-                                                rows="3"
-                                                placeholder="Scrivi il tuo commento..."
-                                                required
-                                            ></textarea>
-                                            <div class="d-flex gap-2">
-                                                <button type="reset" class="btn btn-secondary btn-sm">
-                                                    Annulla
-                                                </button>
-                                                <button type="submit" class="btn btn-success btn-sm">
-                                                    Invia
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
+    <div class="row justify-content-center align-items-start g-4">
 
-                                    <!-- LISTA COMMENTI -->
-                                    <div id="commentsList">
-                                        
-                                    </div>
-                            </div>
+        <!-- COLONNA POST -->
+        <div class="col-12 col-lg-5">
+            <div class="card spotted-post h-100">
+                <div class="card-body d-flex flex-column h-100">
+
+                    <!-- HEADER -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                        <span class="spotted-time">
+                            ${timeAgo(json["data"][0]["data_creazione"])}
+                        </span>
+
+                        <span class="btn-report" role="button" aria-label="Segnala post">
+                            <i class="fa-regular fa-flag"></i>
+                        </span>
+
+                        <span role="button" class="btn-like like-post">
+                            <i class="far fa-heart"></i>
+                            <span class="post-like-count">
+                                ${json["data"][0]["like_count"]}
+                            </span>
+                        </span>
+                    </div>
+
+                    <!-- TESTO CENTRATO -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <p class="spotted-text text-center m-0">
+                            ${json["data"][0]["testo"]}
+                        </p>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="mt-3 text-center">
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-respond"
+                            id="btnRespond">
+                            Respond
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNA COMMENTI -->
+        <div class="col-12 col-lg-5">
+
+            <!-- FORM COMMENTO -->
+            <div class="card spotted-comment mb-3" id="commentFormWrapper" hidden>
+                <div class="card-body">
+                    <form id="commentForm">
+                        <label for="commentTextInput" class="form-label">
+                            Aggiungi un commento:
+                        </label>
+
+                        <textarea
+                            class="form-control mb-3"
+                            id="commentTextInput"
+                            rows="3"
+                            placeholder="Scrivi il tuo commento..."
+                            required>
+                        </textarea>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button type="reset" class="btn btn-secondary btn-sm">
+                                Annulla
+                            </button>
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Invia
+                            </button>
                         </div>
-                    </article>`
+                    </form>
+                </div>
+            </div>
+
+            <!-- LISTA COMMENTI -->
+            <div id="commentsList" class="d-flex flex-column gap-3">
+                <!-- comment cards -->
+            </div>
+
+        </div>
+
+    </div>
+</article>
+`
 
         await writeInPage(doc);
         
@@ -496,6 +520,8 @@ async function getPostPage(url) {
             evAddComment("#commentsList",json["data"][0]["post_id"],document.querySelector("#commentTextInput").value);
             document.querySelector("#commentTextInput").value = "";
             }); 
+        
+
 
         getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,"#commentsList");    
     } catch (error) {
@@ -565,7 +591,7 @@ async function getCompactPostsPage(url,path) {
         console.log(error.message);
     }
 }
-async function getPostsPage(url,path) {
+async function getPostsPage(url, path) {
     try {
         const response = await fetch(url);
 
@@ -575,65 +601,45 @@ async function getPostsPage(url,path) {
 
         const json = await response.json();
 
-        let doc = "";
-
-        switch (json["error"]) {
-            case "nologin":
-                generaLoginPage()
-                throw new Error("no login");
-        
-            default:
-                break;
+        // Controllo errori login
+        if (json["error"] === "nologin") {
+            generaLoginPage();
+            throw new Error("no login");
         }
-        
+
+        let doc = `<div class="row g-4 card-row">`;
         json["data"].forEach(element => {
             doc += `
-            <div class="container-fluid py-4">
-                <div class="row g-4 card-row">
-                    <div class="col-6 col-lg-3">
-                        <div class="card shadow-sm h-100 custom-card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
-                                    <button
-                                        type="button"
-                                        class="btn btn-icon card-icon"
-                                        aria-label="Aggiungi ai preferiti"
-                                        aria-pressed="false">
-                                        <i class="far fa-heart" aria-hidden="true"></i>
-                                    </button>
-
-                                </div>
-                                <div>
-                                    <div class="mt-2 card-text">
-                                        <p>${element.testo}</p>
-                                    </div>
-                                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="card shadow-sm h-100 custom-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                            </div>
+                            <div class="mt-2 card-text">
+                                <p>${element.testo}</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>`;  
-            /*<button
-                type="button"
-                class="btn btn-warning rounded-circle fab-add"
-            >
-                +
-            </button>*/                 
+                </div>`;
         });
-        document.querySelector(path).innerHTML = doc; 
-        for (let i = 0; i < json["data"].length; i++) {
-            document.querySelector(path + ` div:nth-child(${i+1})`)
-                .addEventListener("click",function(){
-                    loadWaitScreen();
-                    getPostPage(`../api-post-id.php?post_id=${json["data"][i]["post_id"]}`)
-                });
-        }
-    } catch (error) {
-        console.log(error.stack );
+
         
+        doc += `</div>`;
+        document.querySelector(path).innerHTML = doc;
+        json["data"].forEach((element, i) => {
+            document.querySelector(path + ` .col-6:nth-child(${i + 1})`)
+                .addEventListener("click", function() {
+                    loadWaitScreen();
+                    getPostPage(`../api-post-id.php?post_id=${element.post_id}`);
+                });
+        });
+
+    } catch (error) {
+        console.log(error.stack);
     }
 }
+
 
 async function getMyPosts(path){
     getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=my_posts",path);

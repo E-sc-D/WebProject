@@ -16,8 +16,24 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 })
+document.addEventListener('click', function(e){
+    if(e.target.closest('.card-icon')) {
+        const btn = e.target.closest('.card-icon');
+        const icon = btn.querySelector('i');
 
-const btnRespond = document.getElementById('btnRespond');
+        if(icon.classList.contains('far')) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');  // cambia cuore vuoto in pieno
+            btn.setAttribute('aria-pressed', 'true');
+        } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');  // torna cuore vuoto
+            btn.setAttribute('aria-pressed', 'false');
+        }
+    }
+});
+
+/* const btnRespond = document.getElementById('btnRespond');
 const commentFormWrapper = document.getElementById('commentFormWrapper');
 const commentForm = document.getElementById('commentForm');
 const btnCancelComment = document.getElementById('btnCancelComment');
@@ -77,3 +93,4 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+ */
