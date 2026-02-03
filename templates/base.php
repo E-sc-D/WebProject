@@ -17,13 +17,13 @@
             <nav class="sb-topnav navbar navbar-expand navbar-dark">
                     <!-- Sidebar Toggle-->
                     <button
-                        class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
+                        class="btn btn-link btn-sm order-lg-0 me-4 me-lg-0"
                         id="sidebarToggle"
                         type="button"
                         aria-label="Apri o chiudi il menu laterale">
                         <i class="fas fa-bars" aria-hidden="true"></i>
                     </button>
-                    <h1>titolo</h1>
+                    <h1>SPOTTED</h1>
                     <a class="nav-link">
                         <i class="fas fa-user fa-fw"></i>
                     </a>
