@@ -18,6 +18,16 @@ Abbiamo 3 tipologie di funzioni:
 function loadWaitScreen(){
     //
 }
+
+function setState(blocked,inspected){
+    if(blocked == 1){
+        return "<p>Post bloccato</p>";
+    }
+    if(inspected == 1){
+        return "<p>Post in attesa di verifica</p>";
+    }
+    return "";
+}
 function timeAgo(dateTimeString) {
     const past = new Date(dateTimeString);
     const now  = new Date();
@@ -520,7 +530,11 @@ async function getPostPage(url) {
             evAddComment("#commentsList",json["data"][0]["post_id"],document.querySelector("#commentTextInput").value);
             document.querySelector("#commentTextInput").value = "";
             }); 
-        
+
+        document.querySelector("#commentForm").addEventListener("reset",(event) =>{
+            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
+            document.querySelector("#commentTextInput").value = "";
+            }); 
 
 
         getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,"#commentsList");    
@@ -591,6 +605,8 @@ async function getCompactPostsPage(url,path) {
         console.log(error.message);
     }
 }
+
+
 async function getPostsPage(url, path) {
     try {
         const response = await fetch(url);
@@ -618,6 +634,7 @@ async function getPostsPage(url, path) {
                             </div>
                             <div class="mt-2 card-text">
                                 <p>${element.testo}</p>
+                                ${setState(element.blocked,element.inspected)}
                             </div>
                         </div>
                     </div>
@@ -791,6 +808,249 @@ async function generaSignInPage() {
     document.querySelector("main div .login-button").addEventListener("click",generaLoginPage);
 }
 
+
+    // Render Top 3 Post più commentati
+function renderTopPosts(topPostsContainer,topPosts) {
+    topPostsContainer.innerHTML = "";
+    if(topPosts.length === 0){
+        topPostsContainer.innerHTML = `<p class="no-post">Nessun post da mostrare</p>`;
+        return;
+    }
+    topPosts.forEach((post,i) => {
+        const col = document.createElement("div");
+        col.classList.add("col-12", "col-lg-4");
+        /* col.classList.add("col");
+        col.style.flex = "0 0 300px";
+        col.style.maxWidth = "300px"; */
+        col.innerHTML = `
+            <div class="card spotted-post h-100">
+            <div class="card-body d-flex flex-column h-100">
+
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                    <span class="spotted-time">
+                        ${timeAgo(post.data_creazione)}
+                    </span>
+
+                </div>
+
+                <!-- TESTO CENTRATO -->
+                <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                    <p class="spotted-text text-center m-0">
+                        ${post.testo}
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+        `;
+        topPostsContainer.appendChild(col);
+        topPostsContainer.querySelector(`div:nth-child(${i+1})`)
+            .addEventListener("click", function() {
+                loadWaitScreen();
+                getPostPage(`../api-post-id.php?post_id=${post.post_id}`);
+            });
+    });
+
+}
+
+    // Render Pending Posts
+function renderPendingPosts(pendingPostsContainer,pendingPosts) {
+    pendingPostsContainer.innerHTML = "";
+    if(pendingPosts.length === 0){
+        pendingPostsContainer.innerHTML = `<p class="no-post">Nessun post in sospeso</p>`;
+        return;
+    }
+    pendingPosts.forEach((post,i) => {
+        const col = document.createElement("div");
+        col.classList.add("col-12", "col-lg-4");
+        col.innerHTML = `
+        <div class="card spotted-post h-100">
+            <div class="card-body d-flex flex-column h-100">
+
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                    <span class="spotted-time">
+                        ${timeAgo(post.data_creazione)}
+                    </span>
+
+                </div>
+
+                <!-- TESTO CENTRATO -->
+                <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                    <p class="spotted-text text-center m-0">
+                        ${post.testo}
+                    </p>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="mt-3 text-center d-flex justify-content-between gap-2">
+                    <button
+                        type="button"
+                        class="btn btn-success btn-respond btn-approve"
+                        data-id="${post.post_id}"
+                        />
+                        Approve
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-danger btn-respond btn-decline"
+                        data-id="${post.post_id}"
+                        />
+                        
+                        Decline
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>`
+        ;
+        pendingPostsContainer.appendChild(col);
+        pendingPostsContainer.querySelector(`div:nth-child(${i+1}) > div > div > 
+            div > button.btn-success`)
+            .addEventListener("click",function(){
+                pendingPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                fetch(`../api-eval-post.php?blocked=0&post_id=${post.post_id}`);
+            })
+        pendingPostsContainer.querySelector(`div:nth-child(${i+1})  > div > div > 
+            div > button.btn-decline`)
+            .addEventListener("click",function(){
+                pendingPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                fetch(`../api-eval-post.php?blocked=1&post_id=${post.post_id}`);
+            })
+    });
+}
+
+    // Render Reported Posts
+function renderReportedPosts(reportedPostsContainer,reportedPosts) {
+    reportedPostsContainer.innerHTML = "";
+    if(reportedPosts.length === 0){
+        reportedPostsContainer.innerHTML = `<p class="no-post">Nessun post segnalato</p>`;
+        return;
+    }
+    reportedPosts.forEach(post => {
+        const col = document.createElement("div");
+        col.classList.add("col-12", "col-lg-4");
+        col.innerHTML = `
+            <div class="card spotted-post h-100">
+                <div class="card-body d-flex flex-column h-100">
+                    <!-- HEADER -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                        <span class="spotted-time">
+                            ${timeAgo(post.data_creazione)}
+                        </span>
+                    </div>
+
+                    <!-- TESTO CENTRATO -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <p class="spotted-text text-center m-0">
+                            ${post.testo}
+                        </p>
+                    </div>
+
+                    <!-- FOOTER CON PULSANTI -->
+                    <div class="mt-3 text-center d-flex justify-content-between gap-2">
+                        <button
+                            type="button"
+                            class="btn btn-respond btn-normalize"
+                            data-id="${post.post_id}">
+                            Togli segnalazione
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-respond btn-remove"
+                            data-id="${post.post_id}">
+                            Rimuovi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        reportedPostsContainer.appendChild(col);
+});
+}
+function removePendingPost(pendingPosts,postId) {
+        const index = pendingPosts.findIndex(p => p.id == postId);
+        if(index !== -1){
+            pendingPosts.splice(index,1);
+            //renderPendingPosts();
+        }
+    }
+function moveReportedToPending(reportedPosts,postId) {
+    const index = reportedPosts.findIndex(p => p.id == postId);
+    if(index !== -1){
+        const post = reportedPosts.splice(index,1)[0];
+        pendingPosts.push(post); // oppure in "approvati" se vuoi
+        renderReportedPosts();
+        renderPendingPosts();
+    }
+}
+
+function removeReportedPost(reportedPosts,postId) {
+    const index = reportedPosts.findIndex(p => p.id == postId);
+    if(index !== -1){
+        reportedPosts.splice(index,1);
+        renderReportedPosts();
+    }
+}
+
+async function getAdminPage() {
+    try {
+        const response = await fetch("../api-get-admin.php");
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+        const json = await response.json();
+
+        // Controllo errori login
+        if (json["error"] === "nologin") {
+            generaLoginPage();
+            throw new Error("no login");
+        }
+
+        doc = `<div class="container py-5">
+                    <h2 class="mb-4 text-center">Admin - Gestione Post</h2>
+
+                    <!-- TOP 3 POST PIÙ COMMENTATI -->
+                    <h3 class="section-title">Top 3 Post Più Commentati</h3>
+                    <div id="topPostsContainer" class="row g-4 mb-5">
+                    <!-- Top 3 post caricati dinamicamente qui -->
+                    </div>
+
+                    <!-- POST IN SOSPESO -->
+                    <h3 class="section-title">Post in Sospeso</h3>
+                    <div id="pendingPostsContainer" class="row g-4 mb-5">
+                        <!-- I post in sospeso saranno caricati qui -->
+                    </div>
+
+                    <!-- POST SEGNALATI -->
+                    <h3 class="section-title">Post Segnalati</h3>
+                    <div id="reportedPostsContainer" class="row g-4 mb-5">
+                        <!-- I post segnalati saranno caricati qui -->
+                    </div>
+                </div>`
+        writeInPage(doc);
+
+    const topPostsContainer = document.getElementById("topPostsContainer");
+    const pendingPostsContainer = document.getElementById("pendingPostsContainer");
+    const reportedPostsContainer = document.getElementById("reportedPostsContainer");
+    
+    const pendingPosts = json["data"]["uninspected_posts"];
+    const reportedPosts = json["data"]["reported_posts"];
+    const mostCommentePosts = json["data"]["most_commented_posts"];
+
+    renderTopPosts(topPostsContainer,mostCommentePosts);
+    renderPendingPosts(pendingPostsContainer,pendingPosts);
+    renderReportedPosts(reportedPostsContainer,reportedPosts);
+
+    } catch (error) {
+        console.log(error.stack);
+    }
+}
 
 
 //get Dashboard

@@ -68,6 +68,7 @@ class DatabaseHelper{
                             "JOIN User u ON p.user_id = u.user_id ".
                             "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
                             "ORDER BY p.data_creazione $order ".
                             "LIMIT ? OFFSET ?";
@@ -87,6 +88,7 @@ class DatabaseHelper{
                             "FROM Post p ".
                             "JOIN User u ON p.user_id = u.user_id ".
                             "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
+                            "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
                             "ORDER BY like_count $order ".
                             "LIMIT ? OFFSET ? ";
@@ -106,6 +108,7 @@ class DatabaseHelper{
                             "FROM Post p ".
                             "JOIN User u ON p.user_id = u.user_id ".
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
+                            "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
                             "ORDER BY comment_count $order ".
                             "LIMIT ? OFFSET ? ";
@@ -120,6 +123,8 @@ class DatabaseHelper{
                     }
                     $sql =  "SELECT ".
                             "p.post_id,".
+                            "p.blocked,".
+                            "p.inspected,".
                             "p.titolo,".
                             "p.testo,".
                             "p.data_creazione,".
@@ -152,6 +157,25 @@ class DatabaseHelper{
 
         // Execute and fetch
         
+        return $result;
+    }
+    
+    public function evalPost($post_id,$blocked){
+        $result = [
+            "data"  => [],
+            "error"=> ""
+        ];
+
+        try {
+            $query = "UPDATE post ".
+                "SET blocked = ? , ".
+                "inspected = 1 ".
+                "WHERE post_id = ? ";
+            $stmt = $this->db->prepare($query);
+            $stmt->bind_param('ii',$blocked,$post_id);
+            $stmt->execute();
+        } catch (Exception $e){ $result["error"] = "error";}
+                      
         return $result;
     }
 
@@ -409,7 +433,7 @@ class DatabaseHelper{
             "error"=> ""
         ];
                 
-        $query = "SELECT user_id, username, password_hash FROM user WHERE username = ?";
+        $query = "SELECT user_id, username, password_hash, s_power_user FROM user WHERE username = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('s',$username);
         $stmt->execute();
@@ -422,6 +446,7 @@ class DatabaseHelper{
             if(password_verify($password,$result_q[0]["password_hash"])){
                 $result['data']["user_id"] = $result_q[0]["user_id"];
                 $result['data']["username"] = $result_q[0]["username"];
+                $result["data"]["s_power_user"] = $result_q[0]["s_power_user"];
             } else {
                 $result['error'] = "dataerror";
             }
@@ -565,8 +590,8 @@ class DatabaseHelper{
                 "COUNT(DISTINCT p.post_id) as npost,".
                 "COUNT(DISTINCT c.comment_id) as ncomment ".
                 "FROM User u ".
-                "JOIN Post p ON u.user_id = p.user_id ".
-                "JOIN Comment c ON u.user_id = c.user_id ".
+                "LEFT JOIN Post p ON u.user_id = p.user_id ".
+                "LEFT JOIN Comment c ON u.user_id = c.user_id ".
                 "WHERE u.user_id = ? ".
                 "Group by user_id ".
                 "LIMIT 1 ";
@@ -597,7 +622,132 @@ class DatabaseHelper{
 
         return $result;
     }
+    
+    public function getAdminPage(): array
+{
+    $result = [
+        "data"  => [],
+        "error" => ""
+    ];
 
+    try {
+        // Collect all data
+        $result["data"]["blocked_posts"] = $this->getBlockedPosts();
+        $result["data"]["reported_posts"] = $this->getReportedPosts();
+        $result["data"]["uninspected_posts"] = $this->getUninspectedPosts();
+        $result["data"]["most_commented_posts"] = $this->getMostCommentedPosts();
+        $result["data"]["stats"] = $this->getAdminStats();
+
+    } catch (Exception $e) {
+        $result["error"] = $e->getMessage();
+    }
+
+    return $result;
+}
+
+private function getBlockedPosts(): array
+{
+    $sql = "SELECT 
+                p.post_id,
+                p.titolo,
+                p.testo,
+                p.data_creazione,
+                u.username,
+                COUNT(DISTINCT rp.id_progressivo) as report_count
+            FROM post p
+            JOIN user u ON p.user_id = u.user_id
+            LEFT JOIN report_post rp ON p.post_id = rp.post_id
+            WHERE p.blocked = 1
+            GROUP BY p.post_id
+            ORDER BY p.data_creazione DESC";
+    
+    $result = $this->db->query($sql);
+    return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+}
+
+private function getReportedPosts(): array
+{
+    $sql = "SELECT 
+                p.post_id,
+                p.titolo,
+                p.testo,
+                p.blocked,
+                p.inspected,
+                p.data_creazione,
+                u.username,
+                COUNT(DISTINCT rp.id_progressivo) as report_count
+            FROM post p
+            JOIN user u ON p.user_id = u.user_id
+            JOIN report_post rp ON p.post_id = rp.post_id
+            GROUP BY p.post_id
+            HAVING report_count > 0
+            ORDER BY report_count DESC";
+    
+    $result = $this->db->query($sql);
+    return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+}
+
+    private function getUninspectedPosts(): array
+{
+    $sql = "SELECT 
+                p.post_id,
+                p.titolo,
+                p.testo,
+                p.data_creazione,
+                u.username,
+                u.user_id
+            FROM post p
+            JOIN user u ON p.user_id = u.user_id
+            WHERE p.blocked = 0 
+              AND p.inspected = 0
+            ORDER BY p.data_creazione ASC";
+    
+    $result = $this->db->query($sql);
+    $posts = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    
+    return $posts;
+}
+
+    private function getMostCommentedPosts(): array
+    {
+        $sql = "SELECT 
+                    p.post_id,
+                    p.titolo,
+                    p.data_creazione,
+                    p.testo,
+                    u.username,
+                    COUNT(DISTINCT c.comment_id) as comment_count,
+                    COUNT(DISTINCT lp.user_id) as like_count
+                FROM post p
+                JOIN user u ON p.user_id = u.user_id
+                LEFT JOIN comment c ON p.post_id = c.post_id
+                LEFT JOIN like_post lp ON p.post_id = lp.post_id
+                WHERE p.blocked = 0
+                GROUP BY p.post_id
+                ORDER BY comment_count DESC
+                LIMIT 3";
+        
+        $result = $this->db->query($sql);
+        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    private function getAdminStats(): array
+    {
+        $sql = "SELECT 
+                    (SELECT COUNT(*) FROM post) as total_posts,
+                    (SELECT COUNT(*) FROM post WHERE blocked = 1) as blocked_posts,
+                    (SELECT COUNT(*) FROM post WHERE inspected = 0 AND blocked = 0) as uninspected_posts,
+                    (SELECT COUNT(DISTINCT post_id) FROM report_post) as reported_posts,
+                    (SELECT COUNT(*) FROM report_post) as total_reports,
+                    (SELECT COUNT(*) FROM report_comment) as comment_reports,
+                    (SELECT COUNT(*) FROM user) as total_users,
+                    (SELECT COUNT(*) FROM user WHERE s_power_user = 1) as admins,
+                    (SELECT COUNT(*) FROM comment) as total_comments,
+                    (SELECT COUNT(*) FROM post WHERE DATE(data_creazione) = CURDATE()) as posts_today";
+        
+        $result = $this->db->query($sql);
+        return $result ? $result->fetch_assoc() : [];
+}
     public function updateUserInfo(int $userId, string $username, string $email, ?string $bio): array
     {
         $result = [
