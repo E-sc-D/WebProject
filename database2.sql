@@ -31,15 +31,24 @@ CREATE TABLE IF NOT EXISTS `comment` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON DELETE CASCADE,
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.comment: ~5 rows (approximately)
+-- Dumping data for table spotted.comment: ~13 rows (approximately)
 INSERT INTO `comment` (`comment_id`, `post_id`, `user_id`, `contenuto`, `data_creazione`) VALUES
 	(7, 4, 8, 'Forse era una mia amica 👀', '2026-01-23 16:58:56'),
 	(8, 5, 9, 'L’ho vista anche io', '2026-01-23 16:58:56'),
 	(9, 6, 10, 'Credo fosse uno studente di ingegneria', '2026-01-23 16:58:56'),
-	(10, 4, 9, 'commento di prova', '2026-01-27 14:39:09'),
-	(11, 4, 9, 'commento di prova', '2026-01-27 14:40:10');
+	(12, 4, 9, 'funziona o no?', '2026-01-28 16:51:01'),
+	(13, 4, 9, 'un altro commento', '2026-01-28 16:52:41'),
+	(14, 4, 9, 'un altro commento', '2026-01-28 16:58:08'),
+	(15, 4, 9, 'brutto', '2026-01-28 16:59:58'),
+	(16, 4, 9, 'vediamo', '2026-01-28 19:12:55'),
+	(17, 4, 9, 'riptoviamo', '2026-01-28 19:13:46'),
+	(18, 4, 9, 'testo generico', '2026-01-30 20:54:52'),
+	(19, 4, 9, 'dai che va ora', '2026-02-01 17:32:45'),
+	(20, 4, 9, 'gia funziona bene', '2026-02-01 17:33:37'),
+	(21, 8, 9, 'è un bel post generato questo', '2026-02-03 22:07:32'),
+	(22, 5, 9, 'bmnbnbmbm', '2026-02-04 10:42:05');
 
 -- Dumping structure for table spotted.like_comment
 CREATE TABLE IF NOT EXISTS `like_comment` (
@@ -52,11 +61,14 @@ CREATE TABLE IF NOT EXISTS `like_comment` (
   CONSTRAINT `like_comment_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.like_comment: ~3 rows (approximately)
+-- Dumping data for table spotted.like_comment: ~6 rows (approximately)
 INSERT INTO `like_comment` (`comment_id`, `user_id`, `data_creazione`) VALUES
 	(7, 8, '2026-01-23 17:01:33'),
+	(7, 9, '2026-01-28 16:28:03'),
 	(8, 9, '2026-01-23 17:01:33'),
-	(9, 10, '2026-01-23 17:01:33');
+	(9, 10, '2026-01-23 17:01:33'),
+	(14, 9, '2026-01-28 19:14:38'),
+	(16, 9, '2026-01-28 19:14:36');
 
 -- Dumping structure for table spotted.like_post
 CREATE TABLE IF NOT EXISTS `like_post` (
@@ -73,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `like_post` (
 INSERT INTO `like_post` (`post_id`, `user_id`, `data_creazione`) VALUES
 	(4, 8, '2026-01-23 17:00:23'),
 	(4, 11, '2026-01-27 20:47:44'),
-	(5, 9, '2026-01-23 17:00:23'),
+	(5, 9, '2026-02-04 10:44:29'),
 	(6, 10, '2026-01-23 17:00:23');
 
 -- Dumping structure for table spotted.post
@@ -84,16 +96,19 @@ CREATE TABLE IF NOT EXISTS `post` (
   `testo` text NOT NULL,
   `data_creazione` datetime DEFAULT current_timestamp(),
   `blocked` tinyint(1) DEFAULT 0,
+  `inspected` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`post_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table spotted.post: ~3 rows (approximately)
-INSERT INTO `post` (`post_id`, `user_id`, `titolo`, `testo`, `data_creazione`, `blocked`) VALUES
-	(4, 8, 'Spotted in biblioteca', 'Chi era la ragazza con la felpa rossa?', '2026-01-23 16:56:47', 0),
-	(5, 9, 'Spotted mensa', 'Cerco il tipo con gli occhiali di ieri', '2026-01-23 16:56:47', 0),
-	(6, 10, 'Messaggio importante', 'Questo post viola le regole', '2026-01-23 16:56:47', 1);
+-- Dumping data for table spotted.post: ~5 rows (approximately)
+INSERT INTO `post` (`post_id`, `user_id`, `titolo`, `testo`, `data_creazione`, `blocked`, `inspected`) VALUES
+	(4, 8, 'Spotted in biblioteca', 'Chi era la ragazza con la felpa rossa?', '2026-01-23 16:56:47', 1, 1),
+	(5, 9, 'Spotted mensa', 'Cerco il tipo con gli occhiali di ieri', '2026-01-23 16:56:47', 0, 1),
+	(6, 10, 'Messaggio importante', 'Questo post viola le regole', '2026-01-23 16:56:47', 1, 0),
+	(7, 9, '', 'questo è un post generato', '2026-02-02 10:03:33', 0, 1),
+	(8, 9, '', 'questo è un altro post generato', '2026-02-02 10:09:28', 0, 0);
 
 -- Dumping structure for table spotted.report_comment
 CREATE TABLE IF NOT EXISTS `report_comment` (
@@ -152,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Dumping data for table spotted.user: ~4 rows (approximately)
 INSERT INTO `user` (`user_id`, `username`, `email`, `bio`, `password_hash`, `s_power_user`, `created_at`) VALUES
 	(8, 'rossomalpelo', 'rossomalpelo@example.com', 'Loves literature and strong opinions.', '$argon2id$v=19$m=65536,t=4,p=1$UWdsbHRjT1BBcU1xa09oYw$VLtjSTy70B5qddS/NUcDbwDCKF97TwNwhF/cY+SlWp4', 0, '2026-01-27 14:51:01'),
-	(9, 'mario', 'mario@example.com', 'Just a regular Mario.', '$argon2id$v=19$m=65536,t=4,p=1$TTl0NThEVVdCdUE3TjRFTA$5b4LJYQJGAHhO12+cO8RoS+tuUYEUhtUbFb8W0Zt9GQ', 0, '2026-01-27 14:51:01'),
+	(9, 'mario', 'mario@gmail.com', 'avvolte funziona', '$argon2id$v=19$m=65536,t=4,p=1$TTl0NThEVVdCdUE3TjRFTA$5b4LJYQJGAHhO12+cO8RoS+tuUYEUhtUbFb8W0Zt9GQ', 1, '2026-01-27 14:51:01'),
 	(10, 'anna', 'anna@example.com', 'Curious mind and coffee enthusiast.', '$argon2id$v=19$m=65536,t=4,p=1$ZnRhL1FXM0tNZ2ZzaHVyVQ$mpr230kpfjSGXuIleMIgdaqFpGo+F8+A6l7BEf+1Fd8', 0, '2026-01-27 14:51:01'),
 	(11, 'mattia', 'mattia@gmail.com', NULL, '$argon2id$v=19$m=65536,t=4,p=1$T2hud0dWRTdWNlpMNXF1eA$Bk7HAmAVXzh7qrzH+K9TGnXQjHmIuwncWuSCBMCWLzA', 0, '2026-01-27 15:40:54');
 
