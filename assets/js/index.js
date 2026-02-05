@@ -170,6 +170,8 @@ async function evLogin(username, password) {
             case "missingdata":
                 writeInLoginError("inserire sia la password che l'utente");
                 break;
+            case "err":
+                writeInLoginError("inserire sia la password che l'utente");
             default:
                 break;
         }
@@ -288,7 +290,7 @@ async function evBlockPost(post_id){
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <button type="button" class="btn-like-sm">
-                                                <i class="far fa-heart"></i><span class="post-like-count">${json["data"][0].like_count}</span>
+                                                <i class="far fa-heart" id= heart></i><span class="post-like-count">${json["data"][0].like_count}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -301,6 +303,17 @@ async function evBlockPost(post_id){
                     evToggleLike(`../api-togglelike.php?comment_id=${json["data"][0]["comment_id"]}`,
                         `${comment_space_selector} > div:nth-child(1) div > div.d-flex.justify-content-end > button > span`);
                 });
+                /* const heart = document.getElementById('heart');
+
+                heart.addEventListener('click', () => {
+                    heart.classList.toggle('fas');
+                    heart.classList.toggle('far');
+
+                    // Animazione
+                    heart.classList.add('animate');
+                    setTimeout(() => heart.classList.remove('animate'), 300);
+                }); */
+
                 
                 break;
             default:
@@ -1007,6 +1020,7 @@ async function generaLoginPage() {
                             class="form-check-input"
                             id="remember"
                         />
+                        <p><p>
                         <label class="form-check-label" for="remember">Ricordami</label>
                         </div> -->
                         <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">

@@ -1,4 +1,3 @@
-
 :root{
     --sb-primary : #FFA84A;
     --sb-secondary : #FEBF7B;
@@ -804,6 +803,14 @@ h2 {
 }
 #postForm textarea::placeholder {
     color: var(--text);
+}
+
+.yellow{
+    background: yellow;
+}
+
+.red{
+    background: red;
 }
 
 
