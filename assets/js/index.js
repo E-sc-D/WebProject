@@ -680,6 +680,19 @@ async function getPostsPage(url, path) {
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                                <span class="btn-like-count like-post">
+                                    <i class="far fa-heart"></i>
+                                    <span class="post-like-count">
+                                        ${element.like_count}
+                                    </span>
+                                </span>
+                                <span class="btn-like-count like-post">
+                                    <i class="fa-regular fa-comment"></i>
+                                    <span class="post-like-count">
+                                        ${element.comment_count}
+                                    </span>
+                                </span>
+
                             </div>
                             <div class="mt-2 card-text">
                                 <p>${element.testo}</p>
@@ -1106,7 +1119,8 @@ async function getAdminPage() {
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
+    getAdminPage();
+    //getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
 //get settings
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
@@ -1120,9 +1134,14 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-ch
     loadWaitScreen();
     getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
-
-//logout
+//aggiungi post
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(4)")
+    .addEventListener("click",function(){
+    loadWaitScreen();
+    addPost("../api-add-post.php");
+});
+//logout
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(5)")
     .addEventListener("click",function(){
     evLogout();
     generaLoginPage();

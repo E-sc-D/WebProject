@@ -192,7 +192,7 @@ body {
     color: var(--text);
 }
 footer{
-    background-color: var(--bg-primary);
+    background-color: var(--bg-secondary);
     
 }
 footer {
@@ -202,6 +202,14 @@ footer {
 footer a {
     color: var(--sb-primary);
     text-decoration: none;
+}
+footer .bootstrap {
+    background-color: var(--sb-primary);
+    color: var(--text);
+}
+footer .fontawesome {
+    background-color: var(--sb-primary);
+    color: var(--text);
 }
 
 
@@ -326,6 +334,8 @@ main {
     /* display: flex; */
     border: none;
     border-radius: 0.8rem;
+    min-height: 260px;
+    height: 496px;
 }
 
 .custom-card .card-body {
@@ -347,13 +357,9 @@ main {
 
 
 @media (max-width: 992px){
-    .custom-card {
-        height: 250px;
-        width: 176px;
-    }
     .card-row {
     display: flex;
-    justify-content: space-evenly;  
+    justify-content: center;  
     align-items: flex-start;
     gap: 1.5rem;
     flex-wrap: wrap;
@@ -589,6 +595,7 @@ main {
 .btn-like-sm {
     background: transparent;
     border: none;
+    padding-left: 20px;
     color: var(--sb-primary);
     width: 24px;
     height: 24px;
@@ -597,6 +604,17 @@ main {
     justify-content: center;
     border-radius: 50%;
     cursor: pointer;
+}
+.btn-like-count {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
 }
 
 .btn-like-sm:hover {
