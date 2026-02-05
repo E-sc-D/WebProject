@@ -438,9 +438,22 @@ async function getUserPage(url){
 }
 
 async function getNewPostPage() {
-    writeInPage("form della pagina")
+    writeInPage(`
+        <div class="container py-5">
+                        <h2 class="mb-4 text-center">Inserimento Post</h2>
 
-    document.querySelector("main div form").addEventListener("submit", function (event) {
+                        <!-- Form per aggiungere post -->
+                        <div class="mb-5">
+                            <form id="postForm">
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="testopost" rows="3" placeholder="Scrivi il tuo post..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Aggiungi Post</button>
+                            </form>
+                        </div>
+                    </div>`)
+
+    document.querySelector("main div div form").addEventListener("submit", function (event) {
         event.preventDefault();
         const testo = document.querySelector("#testopost").value;
         evNewPost(testo);
