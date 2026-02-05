@@ -22,7 +22,7 @@ function loadWaitScreen(){
 function setState(blocked,inspected){
     if(blocked == 1){
         return "red";
-    } else if(inspected == 1) {
+    } else if(inspected == 0) {
         return "yellow";
     }
 }
