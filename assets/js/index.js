@@ -211,6 +211,29 @@ async function evLogout() {
     }
 }
 
+async function evToggleReport(post_id){
+    try {
+
+        const response = await fetch(`../api-toggle-report.php?post_id=${post_id}`);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 async function evToggleLike(url,like_path){
     try {
 
@@ -706,6 +729,9 @@ async function getPostPage(url) {
         
         document.querySelector("span.like-post").addEventListener("click",() => {
             evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
+            });
+        document.querySelector("span.btn-report").addEventListener("click",() => {
+            evToggleReport(json["data"][0]["post_id"]);
             });
         document.querySelector("button.btn-respond").addEventListener("click",() =>{
             document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
