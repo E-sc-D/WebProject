@@ -197,6 +197,55 @@ async function evToggleLike(url,like_path){
     }
 }
 
+async function evBlockPost(post_id){
+    //comment selector deve andare a prendere il testo del commento
+    const url = `../api-add-comment-post.php?post_id=${post_id}&text=${testo}`;
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                doc = `<div class="card spotted-comment mb-3">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="comment-user">${json["data"][0].username}</span>
+                                            <span class="comment-time">${timeAgo(json["data"][0].data_creazione)}</span>
+                                        </div>
+                                        <p class="comment-text mb-1">
+                                            ${json["data"][0].contenuto}
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn-like-sm">
+                                                <i class="far fa-heart"></i><span class="post-like-count">${json["data"][0].like_count}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>`
+                document.querySelector(comment_space_selector).innerHTML =
+                    `${doc} ${document.querySelector(comment_space_selector).innerHTML}`;
+
+                document.querySelector(`${comment_space_selector} > div:nth-child(1) div > div.d-flex.justify-content-end > button`)
+                .addEventListener("click",function(){
+                    evToggleLike(`../api-togglelike.php?comment_id=${json["data"][0]["comment_id"]}`,
+                        `${comment_space_selector} > div:nth-child(1) div > div.d-flex.justify-content-end > button > span`);
+                });
+                
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 async function evAddComment(comment_space_selector,post_id,testo){
     //comment selector deve andare a prendere il testo del commento
     const url = `../api-add-comment-post.php?post_id=${post_id}&text=${testo}`;
@@ -989,7 +1038,7 @@ function renderPendingPosts(pendingPostsContainer,pendingPosts) {
 }
 
     // Render Reported Posts
-function renderReportedPosts(reportedPostsContainer,reportedPosts) {
+function renderReportedPosts(reportedPostsContainer,reportedPosts){
     reportedPostsContainer.innerHTML = "";
     if(reportedPosts.length === 0){
         reportedPostsContainer.innerHTML = `<p class="no-post">Nessun post segnalato</p>`;
