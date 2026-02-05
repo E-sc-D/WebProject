@@ -391,66 +391,64 @@ async function getUserPage(url){
 
             const json = await response.json();
 
-            let form = `<div class="container-fluid px-4 pt-5">
-                    <!-- Header profilo -->
-                        <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card ">
-                            <div class="d-flex flex-column align-items-center text-center">
-                                <div class="position-relative mb-2">
-                                <span><i class="fa-solid fa-circle-user profile-avatar"></i></span>
+            let form = `
+                <div class="container-fluid px-4 pt-5">
+                    <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card">
+                        <div class="d-flex flex-column align-items-center text-center">
+
+                            <div class="position-relative mb-2">
+                                <i class="fa-solid fa-circle-user profile-avatar"></i>
                                 <span class="online-badge position-absolute"></span>
-                                </div>
-                                <div class="mb-3">
-                                    <button id="editBtn" class="btn btn-outline-primary btn-sm">
-                                        Modifica profilo
-                                    </button>
-                                    <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
-                                        Annulla
-                                    </button>
-                                </div>
-
-                                <form id="profileForm" class="w-100" style="max-width: 350px;">
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Nome utente</label>
-                                        <input type="text" class="form-control editable" value="${json["data"]["username"]}" disabled>
-                                    </div>
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control editable" value="${json["data"]["email"]}" disabled>
-                                    </div>
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Bio</label>
-                                        <textarea class="form-control editable auto-resize" rows="1" disabled rows="3" disabled>
-                                            ${json["data"]["bio"]}
-                                        </textarea>
-                                    </div>
-
-                                    <button id="saveBtn" type="submit" class="btn btn-primary w-100 d-none">
-                                        Salva modifiche
-                                    </button>
-                                </form>
-                                
                             </div>
-                        </div> 
-                        <div class="row g-4 card-row">
-                            
-                        </div>        
-                    </div>`;
-            
-/* <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
-                                <div class="text-primary">${json["data"]["email"]}</div>
-                                <p class="text-secondary mb-3 mt-2">
-                                ${json["data"]["bio"]}
-                                </p>
-                                <!-- Statistiche -->
-                                <div class="d-flex gap-4 justify-content-center mb-2">
-                                    <div class="social-stat">
-                                        <span class="fw-bold fs-5">${json["data"]["npost"]}</span><br>
-                                        <small class="text-muted">Post</small>
-                                    </div>
-                                </div> */
+
+                            <div class="mb-3">
+                                <button id="editBtn" class="btn btn-outline-primary btn-sm">
+                                    Modifica profilo
+                                </button>
+                                <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
+                                    Annulla
+                                </button>
+                            </div>
+
+                            <form id="profileForm" class="w-100" style="max-width: 350px;">
+                                <div class="mb-3 text-start">
+                                    <label class="form-label">Nome utente</label>
+                                    <input id="username" type="text"
+                                        class="form-control editable"
+                                        value="${json.data.username}"
+                                        disabled>
+                                </div>
+
+                                <div class="mb-3 text-start">
+                                    <label class="form-label">Email</label>
+                                    <input id="email" type="email"
+                                        class="form-control editable"
+                                        value="${json.data.email}"
+                                        disabled>
+                                </div>
+
+                                <div class="mb-3 text-start">
+                                    <label class="form-label">Bio</label>
+                                    <textarea id="bio"
+                                        class="form-control editable auto-resize"
+                                        rows="1"
+                                        disabled>${json.data.bio}</textarea>
+                                </div>
+
+                                <button id="saveBtn"
+                                    type="submit"
+                                    class="btn btn-primary w-100 d-none">
+                                    Salva modifiche
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <div class="row g-4 card-row"></div>
+                </div>
+                `;
+
             
             switch (json["error"]) {
                 case "nologin":
@@ -460,19 +458,75 @@ async function getUserPage(url){
                 default:
                     writeInPage(form);
                     getMyPosts("#layoutSidenav_content > main > div > div.row.g-4.card-row");
-                    document.querySelector("main form").addEventListener("submit", function (event) {
-                        event.preventDefault();
-                        const username = document.querySelector("#username").value;
-                        const email = document.querySelector("#email").value;
-                        const bio = document.querySelector("#bio").value;
-                        evUpdateUser(username, email,bio);
-                    });
-                    getMyPostsPage
+                        // AUTO RESIZE BIO
+                        const textareas = document.querySelectorAll(".auto-resize");
+
+                        function autoResize(el) {
+                            el.style.height = "auto";
+                            el.style.height = el.scrollHeight + "px";
+                        }
+
+                        textareas.forEach(el => {
+                            autoResize(el);
+                            el.addEventListener("input", () => autoResize(el));
+                        });
+
+                        // ELEMENTI
+                        const editBtn = document.getElementById("editBtn");
+                        const cancelBtn = document.getElementById("cancelBtn");
+                        const saveBtn = document.getElementById("saveBtn");
+                        const editableFields = document.querySelectorAll(".editable");
+
+                        // VALORI ORIGINALI (per Annulla)
+                        const originalData = {
+                            username: document.getElementById("username").value,
+                            email: document.getElementById("email").value,
+                            bio: document.getElementById("bio").value
+                        };
+
+                        // EDIT
+                        editBtn.addEventListener("click", () => {
+                            editableFields.forEach(el => el.disabled = false);
+                            saveBtn.classList.remove("d-none");
+                            cancelBtn.classList.remove("d-none");
+                            editBtn.classList.add("d-none");
+                            textareas.forEach(el => autoResize(el));
+                        });
+
+                        // ANNULLA
+                        cancelBtn.addEventListener("click", () => {
+                            document.getElementById("username").value = originalData.username;
+                            document.getElementById("email").value = originalData.email;
+                            document.getElementById("bio").value = originalData.bio;
+
+                            editableFields.forEach(el => el.disabled = true);
+                            saveBtn.classList.add("d-none");
+                            cancelBtn.classList.add("d-none");
+                            editBtn.classList.remove("d-none");
+
+                            textareas.forEach(el => autoResize(el));
+                        });
+
+                        // SUBMIT
+                        document.getElementById("profileForm").addEventListener("submit", e => {
+                            e.preventDefault();
+
+                            const username = document.getElementById("username").value;
+                            const email = document.getElementById("email").value;
+                            const bio = document.getElementById("bio").value;
+
+                            evUpdateUser(username, email, bio);
+
+                            editableFields.forEach(el => el.disabled = true);
+                            saveBtn.classList.add("d-none");
+                            cancelBtn.classList.add("d-none");
+                            editBtn.classList.remove("d-none");
+                        });
                     break;
                             
             } 
             //script per aggiustare larea di bio 
-            const textareas = document.querySelectorAll(".auto-resize");
+           /*  const textareas = document.querySelectorAll(".auto-resize");
 
             function autoResize(el) {
                 el.style.height = "auto";
@@ -486,11 +540,29 @@ async function getUserPage(url){
                     autoResize(textarea);
                 });
             });
+            //script per abilitare le modifiche 
+            const editBtn = document.getElementById("editBtn");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const saveBtn = document.getElementById("saveBtn");
+            const editableFields = document.querySelectorAll(".editable");
 
-            // Quando entri in modalità modifica
+            editBtn.addEventListener("click", () => {
+                editableFields.forEach(el => el.disabled = false);
+                saveBtn.classList.remove("d-none");
+                cancelBtn.classList.remove("d-none");
+                editBtn.classList.add("d-none");
+            });
+
+            cancelBtn.addEventListener("click", () => {
+                editableFields.forEach(el => el.disabled = true);
+                saveBtn.classList.add("d-none");
+                cancelBtn.classList.add("d-none");
+                editBtn.classList.remove("d-none");
+            });
+
             editBtn.addEventListener("click", () => {
                 textareas.forEach(el => autoResize(el));
-            });
+            }); */
     } catch (error) {
         console.log(error.message);
     }
