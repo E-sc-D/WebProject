@@ -73,7 +73,6 @@ class DatabaseHelper{
                             "ORDER BY p.data_creazione $order ";
                     
                     $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("ii", $limit, $offset);
                     break;
 
                 case 'most_liked':
@@ -92,7 +91,6 @@ class DatabaseHelper{
                             "ORDER BY like_count $order ";
                     
                     $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("ii", $limit, $offset);
                     break;
 
                 case 'most_commented':
@@ -112,7 +110,6 @@ class DatabaseHelper{
                            
                 
                     $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("ii", $limit, $offset);
                     break;
 
                 case 'my_posts':
@@ -139,7 +136,7 @@ class DatabaseHelper{
                             
                     
                     $stmt = $this->db->prepare($sql);
-                    $stmt->bind_param("iii", $id, $limit, $offset);
+                    $stmt->bind_param("i", $id);
                     break;
                                                 
                 default:
@@ -219,7 +216,6 @@ class DatabaseHelper{
                 SELECT 1
                 FROM like_comment
                 WHERE user_id = ? AND comment_id = ?
-                LIMIT 1
             ";
 
             $stmt = $this->db->prepare($checkSql);
