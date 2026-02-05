@@ -1,1 +1,812 @@
 
+:root{
+    --sb-primary : #FFA84A;
+    --sb-secondary : #FEBF7B;
+    --bg-primary : #020617;
+    --bg-secondary : #0F172A;
+    --text: #E5E7EB;
+}
+
+
+/* ==========================
+   RESET DI BASE
+   ========================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    background-color: var(--bg-primary);
+}
+/* ==========================
+   NAVBAR SUPERIORE
+   ========================== */
+
+.sb-topnav.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* sopra la sidebar */
+    height: 56px;
+    padding: 0 1rem;
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.sb-topnav h1 {
+    color: var(--sb-primary);
+    font-size: 1.5rem;
+    margin: 0;
+}
+/* brand e bottone toggle inline a sinistra */
+.sb-topnav .navbar-brand,
+.sb-topnav #sidebarToggle {
+    display: inline-flex;
+    align-items: left;
+}
+
+.sb-topnav .navbar-brand {
+    margin-right: 0.75rem;
+}
+
+/* bottone toggle */
+#sidebarToggle {
+    color: var(--sb-primary);
+    border: none;
+    background: transparent;
+}
+
+/* blocco avatar + dropdown (ul) */
+.sb-topnav .navbar-nav {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+/* item del menu avatar */
+.sb-topnav .navbar-nav .nav-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* link avatar */
+.sb-topnav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--sb-primary);
+}
+
+/* ==========================
+   NASCONDERE SOLO L'AVATAR IN DESKTOP
+   ========================== */
+
+/* Di default (mobile/tablet): avatar visibile */
+.sb-topnav .navbar-nav.ms-auto.ms-md-0.me-3.me-lg-4 {
+    display: flex;
+}
+
+/* In modalità desktop (>= 992px): nascondi SOLO questo blocco */
+@media (min-width: 992px) {
+    .sb-topnav .navbar-nav.ms-auto.ms-md-0.me-3.me-lg-4 {
+        display: none !important;
+    }
+}
+
+/* ==========================
+   LAYOUT PRINCIPALE
+   ========================== */
+
+#layoutSidenav {
+    display: flex;
+    margin-top: 56px; /* altezza navbar superiore */
+    min-height: calc(100vh - 56px);
+}
+
+/* ==========================
+   SIDENAV (SINISTRA)
+   ========================== */
+
+#layoutSidenav_nav {
+    flex: 0 0 auto;
+    width: 2; /* base, gestito da media query e toggle */
+    overflow: hidden;
+    transition: width 0.2s ease-in-out;
+}
+
+/* contenitore nav laterale */
+.sb-sidenav {
+    height: 100%;
+    background-color: var(--bg-primary);
+    color: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #0f172a;
+}
+
+/* area menu */
+.sb-sidenav-menu {
+    flex: 1 1 auto;
+    padding-top: 1rem;
+}
+
+.sb-sidenav-menu .nav {
+    display: flex;
+    flex-direction: column;
+}
+
+/* intestazioni "Core", "Interface", ecc. */
+.sb-sidenav-menu-heading {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #ced4da;
+}
+
+/* link della sidebar */
+.sb-sidenav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--sb-primary);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.sb-sidenav .nav-link:hover,
+.sb-sidenav .nav-link:focus {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* icona a sinistra nel link */
+.sb-sidenav .sb-nav-link-icon {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* freccia apertura sottomenù */
+.sb-sidenav-collapse-arrow {
+    margin-left: auto;
+}
+
+/* footer della sidebar */
+.sb-sidenav-footer {
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-primary);
+    font-size: 0.8rem;
+    color: var(--text);
+}
+footer{
+    background-color: var(--bg-secondary);
+    
+}
+footer {
+    color: var(--text);
+    position:static;
+}
+footer a {
+    color: var(--sb-primary);
+    text-decoration: none;
+}
+footer .bootstrap {
+    background-color: var(--sb-primary);
+    color: var(--text);
+}
+footer .fontawesome {
+    background-color: var(--sb-primary);
+    color: var(--text);
+}
+
+
+/* ==========================
+   CONTENUTO (DESTRA)
+   ========================== */
+
+#layoutSidenav_content {
+    min-height: 100vh;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-primary);
+}
+
+#layoutSidenav_content main {
+    /* flex: 1 0 auto; */
+    padding: 1.5rem;
+}
+
+#layoutSidenav_content footer {
+    flex-shrink: 0;
+}
+
+/* ==========================
+   DESKTOP (SIDEBAR FISSA)
+   ========================== */
+
+@media (min-width: 992px) {
+    #layoutSidenav_nav {
+        width: 225px; /* larghezza sidebar sinistra */
+    }
+
+    #layoutSidenav_content {
+        margin-left: 0; /* gestito dal flex */
+    }
+}
+
+/* ==========================
+   TOGGLE SIDEBAR
+   ========================== */
+
+/* Quando il body ha questa classe, la sidebar viene nascosta */
+body.sb-sidenav-toggled #layoutSidenav_nav {
+    width: 0;
+}
+
+body.sb-sidenav-toggled #layoutSidenav_content {
+    margin-left: 0;
+}
+
+/* Mobile: sidebar tipo off-canvas */
+@media (max-width: 767.98px) {
+    #layoutSidenav_nav {
+        position: fixed;
+        top: 56px; /* sotto la topnav */
+        left: 0;
+        bottom: 0;
+        background-color: #343a40;
+        width: 0;
+        z-index: 1029;
+    }
+    .sb-sidenav{
+        background-color: var(--sb-secondary);
+        opacity: 0.90;
+        width: 100%;
+    }
+    .sb-sidenav .nav-link {
+        color: var(--bg-primary);
+    }
+
+    body.sb-sidenav-toggled #layoutSidenav_nav {
+        width: 100%;
+    }
+}
+
+/* ==========================
+   VARIE UTILI
+   ========================== */
+
+/* breadcrumb senza sfondo */
+.breadcrumb {
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 1rem;
+}
+
+/* card */
+.card {
+    border-radius: 0.35rem;
+}
+
+/* testo mutato */
+.text-muted {
+    color: var(--text);
+}
+
+/* demo: blocco altezza 100vh */
+[style*="height: 100vh"] {
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.03),
+        rgba(0, 0, 0, 0)
+    );
+}
+
+/* ==========================
+   STILE PER PAGINA FEEDS
+   ========================== */
+main {
+    display: block;
+}
+.card-row {
+    display: flex;;
+    justify-content: space-evenly;
+    
+}
+ .custom-card {
+    aspect-ratio: 1 / 1;   /* quadrata */
+    /* display: flex; */
+    border: none;
+    border-radius: 0.8rem;
+    min-height: 260px;
+    height: 496px;
+}
+
+.custom-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* CARD PERSONALIZZATA */
+.custom-card {
+    background: var(--bg-secondary);
+    color: var(--text);
+}
+.card-text {
+    display: flex;               
+    align-items: center;     
+    justify-content: center;  
+    height: 100%;       
+}
+
+
+@media (max-width: 992px){
+    .card-row {
+    display: flex;
+    justify-content: center;  
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+}
+.custom-card:hover {
+    box-shadow: 0 4px 8px rgba(255, 168, 74, 0.2);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+.card-time {
+    color: var(--sb-primary);
+    margin-left: 9px;
+}
+
+.btn-icon.card-icon {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.btn-icon.card-icon:hover {
+    background: rgba(255, 152, 0, 0.15);
+}
+.btn-icon.card-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(255, 152, 0, 0.5);
+}
+
+.card-text {
+    color: var(--text);
+    font-size: 0.97rem;
+    margin-left: 9px;
+    margin-top: 2rem;
+}
+
+.fab-add {
+    position: fixed;
+    right: 24px;      
+    bottom: 24px;     
+    width: 90px;
+    height: 90px;
+    z-index: 2000;   
+    font-size: 5rem;
+    border-radius: 50%;
+    opacity: 0.8;
+    color: var(--text);
+    background-color: var(--sb-primary);
+    border: none;
+}
+.fab-add:hover {
+    opacity: 1.0;
+}
+/* ==========================
+   STILE PER PAGINA FEED SINGOLA
+   ========================== */
+
+/* .row-singolo {
+           
+} */
+
+/* wrapper area centrale (stesso sfondo scuro del design) */
+/* .spotted-wrapper {
+    background: var(--bg-primary);
+    display: flex;
+    justify-content: center;  
+    padding: 2rem 0;           
+} */
+.spotted-wrapper {
+    width: 100%;
+    max-width: none;
+}
+
+
+/* CARD POST PRINCIPALE */
+.spotted-post {
+    background: var(--bg-secondary);
+    color: var(--text);
+    min-height: 260px;
+    height: 496px;
+    position: static;
+    aspect-ratio: 1 / 1;
+    border: none;
+    border-radius: 0.8rem;
+    padding: 20px 0;
+}
+/* #commentsList {
+    max-height: 65vh;
+    overflow-y: auto;
+} */
+.spotted-post,
+.spotted-comment {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.spotted-comment {
+    height: 100px;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+
+
+/* card-body già in flex colonna */
+/* .spotted-post .card-body {
+    display: flex;
+    flex-direction: column;
+}
+ */
+/* contenitore dei bottoni in fondo a destra */
+/* .spotted-footer-buttons {
+    margin-top: auto;                 
+    display: flex;
+    justify-content: flex-end;        
+    align-items: center;                    
+} */
+/* label in alto a sinistra (arancione) */
+.spotted-label {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+}
+
+/* tempo in alto a destra */
+.spotted-time {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+}
+
+/* testo centrale del post */
+.spotted-text {
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+}
+.spotted-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* bottone like grande dentro il post */
+.btn-like {
+    background: transparent;
+    border: none;
+    padding-left: 8px;
+    color: var(--sb-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.post-like-count {
+    margin-left: 6px;
+}
+
+.btn-report {
+    background: transparent;
+    border: none;
+    padding-left: 8px;
+    color: var(--sb-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.btn-like:hover {
+    background: rgba(255, 159, 28, 0.12);
+}
+.btn-report:hover {
+    background: rgba(255, 159, 28, 0.12);
+}
+
+/* bottone "Respond" come nel design */
+.btn-respond {
+    padding: 10px 20px;
+    border-radius: 50px;
+    background-color: #ff880024;
+    font-size: 14px;
+    padding: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    border-color: var(--sb-primary);
+}
+
+.btn-respond:hover {
+    background-color: #ffb366; /* tonalità più chiara di arancione */
+}
+
+/* CARD COMMENTO */
+.spotted-comment {
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 0.5rem;
+    color: var(--text);
+    height: 100px;
+    margin-bottom: 16px;
+    padding-left: 10px;
+}
+
+.comment-user {
+    font-size: 0.75rem;
+    color: var(--sb-primary);
+    text-transform: lowercase;
+}
+
+.comment-time {
+    font-size: 0.7rem;
+    color: var(--sb-primary);
+}
+
+.comment-text {
+    font-size: 0.75rem;
+    color: var(--spotted-text);
+}
+
+/* like piccolo nei commenti */
+.btn-like-sm {
+    background: transparent;
+    border: none;
+    padding-left: 20px;
+    color: var(--sb-primary);
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.btn-like-count {
+    background: transparent;
+    border: none;
+    color: var(--sb-primary);
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.btn-like-sm:hover {
+    background: rgba(255, 159, 28, 0.12);
+}
+
+/* RESPONSIVE: su mobile post sopra, commenti sotto a tutta larghezza */
+@media (max-width: 992px) {
+    
+    .spotted-post{
+        width: 372px;
+        height: 369px;
+        position: static;
+        
+    }
+    .spotted-comment {
+        width: 372px;
+        height: 85px;
+    }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .spotted-post{
+        width: 512px;
+        height: 496px;
+        position: static;
+        
+    }
+    .spotted-comment {
+        width: 512px;
+        height: 100px;
+    }
+}
+
+/* ==========================
+   STILE PER LoGIN PAGE
+   ========================== */
+   .login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    background-color: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: flex-start;
+}
+h2 {
+    align-self: center;
+    color: var(--sb-primary);
+    margin-bottom: 1.5rem;
+}
+.login-card form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: space-evenly;
+}
+.login-card form div{
+    display: flex;
+    justify-content: space-between;
+    gap: 0.25rem;
+}
+.login-card .form-label{
+    color: var(--sb-primary);
+}
+.login-card input{
+    border-radius: 7px;
+}
+.login-card .btn-primary {
+    background-color: #ff880024;
+    border-color: #ff880024;
+    border-radius: 18px;
+    font-size: 18px;
+    padding: 0.8rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-top: 50px;
+}
+.login-card .btn-primary:hover{
+    background-color: var(--text);
+    border-color: var(--sb-primary);
+    color: var(--sb-primary);
+}
+/* ==========================
+   STILE PER PROFILE PAGE
+   ========================== */
+.profile-card {
+    background: var(--bg-secondary);
+    color: var(--text);
+    border: none;
+    border-radius: 0.8rem;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    display: flex;
+    min-height: 400px;
+    justify-content: center;
+    align-items: end;
+    
+}
+.profile-avatar {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      position: relative;
+      margin-top: -80px;
+      color: var(--sb-primary);
+      /* background: var(--bg-secondary); */
+    }
+    .online-badge {
+      width: 20px;
+      height: 20px;
+      background: #28c76f;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+    }
+    .social-stat {
+      min-width: 90px;
+    }
+    .auto-resize {
+    resize: none;          
+    overflow: hidden;     
+}
+#editBtn,#saveBtn{
+    background-color: var(--sb-primary);
+    color: var(--text);
+}
+#editBtn:hover,#saveBtn:hover{
+    background: transparent;
+    color: var(--sb-primary);
+    border-color: var(--sb-primary);
+}
+/* ==========================
+   STILE PER form commenti
+   ========================== */
+#commentFormWrapper {
+    background-color: var(--bg-secondary);
+    padding-bottom: 220px;
+    border-radius: 0.5rem;
+}
+#commentForm textarea {
+    background-color: var(--bg-secondary);
+    color: var(--text);
+    border-radius: 0.5rem;
+    width: 100%;
+}
+#commentForm div {
+    display: flex;
+    justify-content: space-between;
+}
+#commentForm div button {
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 8px;
+    color: var(--text);
+    background-color: #ff880024;
+    border-color: var(--sb-primary);
+}
+#commentForm div button:hover {
+    background-color: var(--text); /* tonalità più chiara di arancione */
+    color: var(--sb-primary);
+    
+}
+/* ==========================
+   STILE PER form add post
+   ========================== */
+#postForm textarea {
+    background-color: var(--bg-secondary);
+    color: var(--text);
+    border-radius: 0.5rem;
+    width: 100%;
+}
+#postForm textarea::placeholder {
+    color: var(--text);
+}
+
+
+.section-title,.no-post{
+    color: var(--text)
+}
