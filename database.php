@@ -70,8 +70,7 @@ class DatabaseHelper{
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
                             "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
-                            "ORDER BY p.data_creazione $order ".
-                            "LIMIT ? OFFSET ?";
+                            "ORDER BY p.data_creazione $order ";
                     
                     $stmt = $this->db->prepare($sql);
                     $stmt->bind_param("ii", $limit, $offset);
@@ -90,8 +89,7 @@ class DatabaseHelper{
                             "LEFT JOIN Like_Post lp ON p.post_id = lp.post_id ".
                             "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
-                            "ORDER BY like_count $order ".
-                            "LIMIT ? OFFSET ? ";
+                            "ORDER BY like_count $order ";
                     
                     $stmt = $this->db->prepare($sql);
                     $stmt->bind_param("ii", $limit, $offset);
@@ -110,8 +108,8 @@ class DatabaseHelper{
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
                             "WHERE p.blocked = 0 AND p.inspected = 1 ".
                             "GROUP BY p.post_id ".
-                            "ORDER BY comment_count $order ".
-                            "LIMIT ? OFFSET ? ";
+                            "ORDER BY comment_count $order ";
+                           
                 
                     $stmt = $this->db->prepare($sql);
                     $stmt->bind_param("ii", $limit, $offset);
@@ -137,8 +135,8 @@ class DatabaseHelper{
                             "LEFT JOIN Comment c ON p.post_id = c.post_id ".
                             "WHERE p.user_id = ? ".
                             "GROUP BY p.post_id ".
-                            "ORDER BY p.data_creazione $order ".
-                            "LIMIT ? OFFSET ?";
+                            "ORDER BY p.data_creazione $order ";
+                            
                     
                     $stmt = $this->db->prepare($sql);
                     $stmt->bind_param("iii", $id, $limit, $offset);
@@ -687,8 +685,8 @@ class DatabaseHelper{
                 "LEFT JOIN Post p ON u.user_id = p.user_id ".
                 "LEFT JOIN Comment c ON u.user_id = c.user_id ".
                 "WHERE u.user_id = ? ".
-                "Group by user_id ".
-                "LIMIT 1 ";
+                "Group by user_id ";
+               
             
 
             $stmt = $this->db->prepare($sql);
