@@ -586,7 +586,8 @@ class DatabaseHelper{
                 "u.username,".
                 "u.email,". 
                 "u.bio,". 
-                "u.created_at,".
+                "u.created_at, ".
+                "u.s_power_user, ".
                 "COUNT(DISTINCT p.post_id) as npost,".
                 "COUNT(DISTINCT c.comment_id) as ncomment ".
                 "FROM User u ".

@@ -63,8 +63,7 @@
                                 <i class="fas fa-sign-out-alt"></i>
                             </div>
                             <span>Logout</span>
-                        </a>
-                        
+                        </a>        
                     </div>
                 </div>
                 <!-- Footer della sidenav -->

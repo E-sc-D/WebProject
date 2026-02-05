@@ -120,6 +120,39 @@ async function evSignIn(username, password,email) {
     }
 }
 
+async function evIsAdminLoggedIn(){
+    try {
+         const response = await fetch("../api-get-user.php");
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+    const json = await response.json(); 
+    if(json["data"]["s_power_user"] == 1){
+                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div")
+                        .innerHTML += `
+                            <a class="nav-link" href="#!">
+                                <div class="sb-nav-link-icon" aria-hidden="true">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <span>Dashboard</span>
+                            </a>`
+                    
+                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+                        .addEventListener("click",function(){
+                        loadWaitScreen();
+                        getAdminPage();
+                    });
+
+                }
+    } catch (error) {
+        console.log(json["error"]);
+    }
+    
+
+}
+
 async function evLogin(username, password) {
     const url = '../api-login.php';
     const formData = new FormData();
@@ -1270,8 +1303,7 @@ document.querySelector("body > nav > a").addEventListener("click" ,function(){
     getUserPage("../api-get-user.php");
 })
 
-document.querySelector*""
-
+evIsAdminLoggedIn();
 getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all","main");
 
 
