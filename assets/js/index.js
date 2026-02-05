@@ -1070,7 +1070,8 @@ async function getAdminPage() {
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
+    getAdminPage();
+    //getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
 //get settings
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
@@ -1084,9 +1085,14 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-ch
     loadWaitScreen();
     getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
-
-//logout
+//aggiungi post
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(4)")
+    .addEventListener("click",function(){
+    loadWaitScreen();
+    addPost("../api-add-post.php");
+});
+//logout
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(5)")
     .addEventListener("click",function(){
     evLogout();
     generaLoginPage();

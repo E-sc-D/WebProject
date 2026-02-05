@@ -62,6 +62,12 @@
                             <span>Feeds</span>
                         </a>
                         <!-- Logout: se fa un'azione -->
+                         <a class="nav-link" href="#!">
+                            <div class="sb-nav-link-icon" aria-hidden="true">
+                                <i class="fa-solid fa-plus"></i>
+                            </div>
+                            <span>Aggiungi post</span>
+                        </a>
                         <a
                             class="nav-link btn btn-link text-start"
                             href="#!">
