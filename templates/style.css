@@ -805,3 +805,7 @@ h2 {
     color: var(--text);
 }
 
+
+.section-title,.no-post{
+    color: var(--text)
+}
