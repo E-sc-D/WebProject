@@ -50,7 +50,7 @@ async function writeInPage(content){
    document.querySelector("main").innerHTML = content; 
 } 
 function writeInLoginError(error) {
-    document.querySelector("form > p").innerText = error;
+    document.querySelector("#layoutSidenav_content > main > div > div > form > p").innerText = error;
 }
 
 async function evNewPost(text){
@@ -97,7 +97,7 @@ async function evSignIn(username, password,email) {
                 writeInLoginError("devi completare tutti i campi");
                 break;
             
-            case "userexists":
+            case "username_exists":
                 writeInLoginError("nome utente gia in uso");
                 break;
 
@@ -171,7 +171,7 @@ async function evLogin(username, password) {
                 writeInLoginError("inserire sia la password che l'utente");
                 break;
             case "err":
-                writeInLoginError("inserire sia la password che l'utente");
+                writeInLoginError("i dati inseriti non corrispondono");
             default:
                 break;
         }
@@ -1014,13 +1014,13 @@ async function generaLoginPage() {
                             required
                         />
                         </div>
+                        <p style="color:orange" ></p>
                         <!-- <div class="mb-3 form-check">
                         <input
                             type="checkbox"
                             class="form-check-input"
                             id="remember"
                         />
-                        <p><p>
                         <label class="form-check-label" for="remember">Ricordami</label>
                         </div> -->
                         <button type="submit" name="submit" value="Invia"class="btn btn-primary w-100 login-button">
@@ -1081,6 +1081,7 @@ async function generaSignInPage() {
                     required
                 />
                 </div>
+                <p style="color:orange"></p>
                 <!-- <div class="mb-3 form-check">
                 <input
                     type="checkbox"
