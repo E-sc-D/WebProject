@@ -8,7 +8,7 @@
         <meta name="author" content="" />
         <title>Static Navigation - SB Admin</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="style.css" rel="stylesheet" />
+        <link href="../assets/css/style.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
