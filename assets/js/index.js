@@ -48,6 +48,7 @@ function timeAgo(dateTimeString) {
 
 async function writeInPage(content){
    document.querySelector("main").innerHTML = content; 
+   
 } 
 function writeInLoginError(error) {
     document.querySelector("#layoutSidenav_content > main > div > div > form > p").innerText = error;
@@ -561,67 +562,29 @@ async function getUserPage(url){
                         });
                         const toggleButton = document.getElementById('theme-toggle');
                         const body = document.body;
-
-                        // Controlla se c'è un tema salvato
-                        if(localStorage.getItem('theme') === 'dark') {
-                        body.classList.add('dark-theme');
-                        toggleButton.textContent = '☀️ Light Mode';
-                        }
-
-                        // Cambia tema al click
-                        toggleButton.addEventListener('click', () => {
-                        body.classList.toggle('dark-theme');
-
-                        if(body.classList.contains('dark-theme')) {
+                        document.cookie = 'dark'
+                            if(localStorage.getItem('theme') === 'dark') {
+                            body.classList.add('dark-theme');
                             toggleButton.textContent = '☀️ Light Mode';
-                            localStorage.setItem('theme', 'dark');
-                        } else {
-                            toggleButton.textContent = '🌙 Dark Mode';
-                            localStorage.setItem('theme', 'light');
-                        }
+                            }
+
+                            toggleButton.addEventListener('click', () => {
+                            document.cookie = 'dark';    
+                            body.classList.toggle('dark-theme');
+
+                            if(body.classList.contains('dark-theme')) {
+                                toggleButton.textContent = '☀️ Light Mode';
+                                localStorage.setItem('theme', 'dark');
+                            } else {
+                                toggleButton.textContent = '🌙 Dark Mode';
+                                localStorage.setItem('theme', 'light');
+                                document.cookie = 'light'
+                            }
                         });
 
                     break;
                             
             } 
-            //script per aggiustare larea di bio 
-           /*  const textareas = document.querySelectorAll(".auto-resize");
-
-            function autoResize(el) {
-                el.style.height = "auto";
-                el.style.height = el.scrollHeight + "px";
-            }
-
-            textareas.forEach(textarea => {
-                autoResize(textarea);
-
-                textarea.addEventListener("input", () => {
-                    autoResize(textarea);
-                });
-            });
-            //script per abilitare le modifiche 
-            const editBtn = document.getElementById("editBtn");
-            const cancelBtn = document.getElementById("cancelBtn");
-            const saveBtn = document.getElementById("saveBtn");
-            const editableFields = document.querySelectorAll(".editable");
-
-            editBtn.addEventListener("click", () => {
-                editableFields.forEach(el => el.disabled = false);
-                saveBtn.classList.remove("d-none");
-                cancelBtn.classList.remove("d-none");
-                editBtn.classList.add("d-none");
-            });
-
-            cancelBtn.addEventListener("click", () => {
-                editableFields.forEach(el => el.disabled = true);
-                saveBtn.classList.add("d-none");
-                cancelBtn.classList.add("d-none");
-                editBtn.classList.remove("d-none");
-            });
-
-            editBtn.addEventListener("click", () => {
-                textareas.forEach(el => autoResize(el));
-            }); */
     } catch (error) {
         console.log(error.message);
     }
@@ -1424,6 +1387,14 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-c
                         loadWaitScreen();
                         getAdminPage();
                     });
+if(document.cookie.includes('dark')){
+    body.classList.add('dark-theme');
+    toggleButton.textContent = '☀️ Light Mode';
+}
+else{
+    body.classList.add('light-theme');
+    toggleButton.textContent = '☀️ Dark Mode';
+}
 
 
 
