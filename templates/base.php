@@ -72,11 +72,6 @@
                         </a >        
                     </div>
                 </div>
-                <!-- Footer della sidenav -->
-                <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    <span>Admin</span>
-                </div>
             </nav>
         </div>
 
@@ -109,8 +104,8 @@
                             adis.dema@studio.unibo.it
                         </div>
                         <div>
-                            <strong>Edoardo</strong>
-                            Edoardo@studio.unibo.it
+                            <strong>Edoardo Scorza</strong>
+                            edoardo.scorza@studio.unibo.it
         
                         </div>
                     </div>

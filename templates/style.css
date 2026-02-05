@@ -813,3 +813,7 @@ h2 {
     background: red;
 }
 
+
+.section-title,.no-post{
+    color: var(--text)
+}
