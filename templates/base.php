@@ -45,18 +45,6 @@
                     <div class="nav">
                         <a class="nav-link" href="#!">
                             <div class="sb-nav-link-icon" aria-hidden="true">
-                                <i class="fas fa-tachometer-alt"></i>
-                            </div>
-                            <span>Dashboard</span>
-                        </a>
-                        <a class="nav-link" href="#!">
-                            <div class="sb-nav-link-icon" aria-hidden="true">
-                                <i class="fas fa-cog"></i>
-                            </div>
-                            <span>Settings</span>
-                        </a>
-                        <a class="nav-link" href="#!">
-                            <div class="sb-nav-link-icon" aria-hidden="true">
                                 <i class="fas fa-list"></i>
                             </div>
                             <span>Feeds</span>

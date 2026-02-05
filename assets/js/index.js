@@ -117,6 +117,23 @@ async function evLogin(username, password) {
 
         switch (json["error"]) {
             case "":
+                if(json["data"]["s_power_user"] == 1){
+                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div")
+                        .innerHTML += `
+                            <a class="nav-link" href="#!">
+                                <div class="sb-nav-link-icon" aria-hidden="true">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <span>Dashboard</span>
+                            </a>`
+                    
+                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+                        .addEventListener("click",function(){
+                        loadWaitScreen();
+                        getAdminPage();
+                    });
+
+                }
                 loadWaitScreen();
                 getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
@@ -345,7 +362,7 @@ async function getUserPage(url){
 
             const json = await response.json();
 
-            let form = `<div class="container-fluid px-4 pt-5">
+            let form = `<div class="container-fluid px-4 ">
                     <!-- Header profilo -->
                         <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card ">
                             <div class="d-flex flex-column align-items-center text-center">
@@ -353,47 +370,7 @@ async function getUserPage(url){
                                 <span><i class="fa-solid fa-circle-user profile-avatar"></i></span>
                                 <span class="online-badge position-absolute"></span>
                                 </div>
-                                <div class="mb-3">
-                                    <button id="editBtn" class="btn btn-outline-primary btn-sm">
-                                        Modifica profilo
-                                    </button>
-                                    <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
-                                        Annulla
-                                    </button>
-                                </div>
-
-                                <form id="profileForm" class="w-100" style="max-width: 350px;">
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Nome utente</label>
-                                        <input type="text" class="form-control editable" value="${json["data"]["username"]}" disabled>
-                                    </div>
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control editable" value="${json["data"]["email"]}" disabled>
-                                    </div>
-
-                                    <div class="mb-3 text-start">
-                                        <label class="form-label">Bio</label>
-                                        <textarea class="form-control editable auto-resize" rows="1" disabled rows="3" disabled>
-                                            ${json["data"]["bio"]}
-                                        </textarea>
-                                    </div>
-
-                                    <button id="saveBtn" type="submit" class="btn btn-primary w-100 d-none">
-                                        Salva modifiche
-                                    </button>
-                                </form>
-                                
-                            </div>
-                        </div> 
-                        <div class="row g-4 card-row">
-                            
-                        </div>        
-                    </div>`;
-            
-/* <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
+                                <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
                                 <div class="text-primary">${json["data"]["email"]}</div>
                                 <p class="text-secondary mb-3 mt-2">
                                 ${json["data"]["bio"]}
@@ -404,7 +381,15 @@ async function getUserPage(url){
                                         <span class="fw-bold fs-5">${json["data"]["npost"]}</span><br>
                                         <small class="text-muted">Post</small>
                                     </div>
-                                </div> */
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="row g-4 card-row">
+                            
+                        </div>        
+                    </div>`;
+            
+
             
             switch (json["error"]) {
                 case "nologin":
@@ -425,31 +410,22 @@ async function getUserPage(url){
                     break;
                             
             } 
-            //script per aggiustare larea di bio 
-            const textareas = document.querySelectorAll(".auto-resize");
-
-            function autoResize(el) {
-                el.style.height = "auto";
-                el.style.height = el.scrollHeight + "px";
-            }
-
-            textareas.forEach(textarea => {
-                autoResize(textarea);
-
-                textarea.addEventListener("input", () => {
-                    autoResize(textarea);
-                });
-            });
-
-            // Quando entri in modalità modifica
-            editBtn.addEventListener("click", () => {
-                textareas.forEach(el => autoResize(el));
-            });
     } catch (error) {
         console.log(error.message);
     }
 }
-async function getPostComments(url,posts_path) {
+
+async function getNewPostPage() {
+    writeInPage("form della pagina")
+
+    document.querySelector("main div form").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const testo = document.querySelector("#testopost").value;
+        evNewPost(testo);
+    });
+}
+
+async function getPostPage(url) {
     try {
         const response = await fetch(url);
 
@@ -461,48 +437,129 @@ async function getPostComments(url,posts_path) {
 
         let doc = "";
 
-        
         switch (json["error"]) {
             case "nologin":
                 generaLoginPage()
                 throw new Error("no login");
         
             default:
+                console.log(json["error"]);
                 break;
         }
         
-        json["data"].forEach(element => {
-            doc += `<div class="card spotted-comment mb-3">
-                                    <div class="card-body d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="comment-user">${element.username}</span>
-                                            <span class="comment-time">${timeAgo(element.data_creazione)}</span>
-                                        </div>
-                                        <p class="comment-text mb-1">
-                                            ${element.contenuto}
-                                        </p>
-                                        <div class="d-flex justify-content-end">
-                                            <button type="button" class="btn-like-sm">
-                                                <i class="far fa-heart"></i><span class="post-like-count">${element.like_count}</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>`//qua ci va l'html dei commenti
-        });
+        doc = `<article class="container-fluid py-4 spotted-wrapper">
+    <div class="row justify-content-center align-items-start g-4">
 
-        document.querySelector(posts_path).innerHTML = doc;
+        <!-- COLONNA POST -->
+        <div class="col-12 col-lg-5">
+            <div class="card spotted-post h-100">
+                <div class="card-body d-flex flex-column h-100">
 
-       for (let i = 0; i < json["data"].length; i++) {
-            document.querySelector(`${posts_path} > div:nth-child(${i+1}) div > div.d-flex.justify-content-end > button`)
-                .addEventListener("click",function(){
-                    evToggleLike(`../api-togglelike.php?comment_id=${json["data"][i]["comment_id"]}`,
-                        `${posts_path} > div:nth-child(${i+1}) div > div.d-flex.justify-content-end > button > span`);
-                });
-        }
+                    <!-- HEADER -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
+                        <span class="spotted-time">
+                            ${timeAgo(json["data"][0]["data_creazione"])}
+                        </span>
+
+                        <span class="btn-report" role="button" aria-label="Segnala post">
+                            <i class="fa-regular fa-flag"></i>
+                        </span>
+
+                        <span role="button" class="btn-like like-post">
+                            <i class="far fa-heart"></i>
+                            <span class="post-like-count">
+                                ${json["data"][0]["like_count"]}
+                            </span>
+                        </span>
+                    </div>
+
+                    <!-- TESTO CENTRATO -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <p class="spotted-text text-center m-0">
+                            ${json["data"][0]["testo"]}
+                        </p>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="mt-3 text-center">
+                        <button
+                            type="button"
+                            class="btn btn-warning btn-respond"
+                            id="btnRespond">
+                            Respond
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNA COMMENTI -->
+        <div class="col-12 col-lg-5">
+
+            <!-- FORM COMMENTO -->
+            <div class="card spotted-comment mb-3" id="commentFormWrapper" hidden>
+                <div class="card-body">
+                    <form id="commentForm">
+                        <label for="commentTextInput" class="form-label">
+                            Aggiungi un commento:
+                        </label>
+
+                        <textarea
+                            class="form-control mb-3"
+                            id="commentTextInput"
+                            rows="3"
+                            placeholder="Scrivi il tuo commento..."
+                            required>
+                        </textarea>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button type="reset" class="btn btn-secondary btn-sm">
+                                Annulla
+                            </button>
+                            <button type="submit" class="btn btn-success btn-sm">
+                                Invia
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- LISTA COMMENTI -->
+            <div id="commentsList" class="d-flex flex-column gap-3">
+                <!-- comment cards -->
+            </div>
+
+        </div>
+
+    </div>
+</article>
+`
+
+        await writeInPage(doc);
         
-        
+        document.querySelector("span.like-post").addEventListener("click",() => {
+            evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
+            });
+        document.querySelector("button.btn-respond").addEventListener("click",() =>{
+            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
+            });
+       
+        document.querySelector("#commentForm").addEventListener("submit",(event) =>{
+            event.preventDefault();
+            evAddComment("#commentsList",json["data"][0]["post_id"],document.querySelector("#commentTextInput").value);
+            document.querySelector("#commentTextInput").value = "";
+            }); 
+
+        document.querySelector("#commentForm").addEventListener("reset",(event) =>{
+            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
+            document.querySelector("#commentTextInput").value = "";
+            }); 
+
+
+        getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,"#commentsList");    
     } catch (error) {
-        console.log(error.message);
+        console.log(error.stack);
     }
 }
 
@@ -732,19 +789,6 @@ async function getPostsPage(url, path) {
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
-                                <span class="btn-like-count like-post">
-                                    <i class="far fa-heart"></i>
-                                    <span class="post-like-count">
-                                        ${element.like_count}
-                                    </span>
-                                </span>
-                                <span class="btn-like-count like-post">
-                                    <i class="fa-regular fa-comment"></i>
-                                    <span class="post-like-count">
-                                        ${element.comment_count}
-                                    </span>
-                                </span>
-
                             </div>
                             <div class="mt-2 card-text">
                                 <p>${element.testo}</p>
@@ -1167,33 +1211,21 @@ async function getAdminPage() {
 }
 
 
-//get Dashboard
+
+//get feed
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
     .addEventListener("click",function(){
     loadWaitScreen();
-    getAdminPage();
-    //getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
-});
-//get settings
-document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
-    .addEventListener("click",function(){
-    loadWaitScreen();
     getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
 });
-//get feed
-document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
+
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(2)")
     .addEventListener("click",function(){
-    loadWaitScreen();
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
+    getNew
 });
-//aggiungi post
-document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(4)")
-    .addEventListener("click",function(){
-    loadWaitScreen();
-    addPost("../api-add-post.php");
-});
+
 //logout
-document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(5)")
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(3)")
     .addEventListener("click",function(){
     evLogout();
     generaLoginPage();
