@@ -211,6 +211,29 @@ async function evLogout() {
     }
 }
 
+async function evToggleSignal(url){
+    try {
+
+        const response = await fetch("../api-toggle-report.php");
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 async function evToggleLike(url,like_path){
     try {
 

@@ -272,6 +272,69 @@ class DatabaseHelper{
         return $result;
     }
 
+    function togglePostReport(int $userId, int $postId): array
+    {
+        $result = [
+            "data"  => null,
+            "error"=> null
+        ];
+
+        try {
+            $checkSql = "
+                SELECT 1
+                FROM report_post
+                WHERE user_id = ? AND post_id = ?
+                LIMIT 1
+            ";
+
+            $stmt = $this->db->prepare($checkSql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $postId);
+            $stmt->execute();
+            $stmt->store_result();
+
+            $likeExists = $stmt->num_rows > 0;
+            $stmt->close();
+
+            if ($likeExists) {
+                // REMOVE LIKE
+                $sql = "
+                    DELETE FROM report_post
+                    WHERE user_id = ? AND post_id = ?
+                ";
+
+                $state = "off"; // OFF
+            } else {
+                // ADD LIKE
+                $sql = "
+                    INSERT INTO report_post (user_id, post_id)
+                    VALUES (?, ?)
+                ";
+
+                $state = "on"; // ON
+            }
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("ii", $userId, $postId);
+            $stmt->execute();
+            $stmt->close();
+
+            $result['data'] = $state;
+              
+        } catch (Exception $e) {
+            $result['error'] = $e->getMessage();
+        }
+
+        return $result;
+    }
+
     function togglePostLike(int $userId, int $postId): array
     {
         $result = [
