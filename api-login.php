@@ -10,7 +10,8 @@ if(isset($_POST["username"]) && isset($_POST["password"])){
     switch($login_result["error"]){
         case "":
             registerLoggedUser($login_result["data"]["user_id"],
-                            $login_result["data"]["username"]); 
+                            $login_result["data"]["username"],
+                            $login_result["data"]["s_power_user"]); 
             $result = $login_result;
             break;
         default:

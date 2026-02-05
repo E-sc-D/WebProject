@@ -10,7 +10,7 @@ if(isValidString($_POST["username"] ?? null) &&
     $query_result = $dbh->signInUser($_POST["username"], $_POST["email"],$_POST["password"]);
     switch ($query_result["error"]) {
         case '':
-            registerLoggedUser($query_result["data"]["user_id"],$_POST["username"]);
+            registerLoggedUser($query_result["data"]["user_id"],$_POST["username"],0);
             $result["data"] = $query_result["data"]["user_id"];
             break;
         

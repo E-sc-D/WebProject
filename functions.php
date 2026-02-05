@@ -13,9 +13,14 @@ function isUserLoggedIn(){
     return !empty($_SESSION['user_id']);
 }
 
-function registerLoggedUser($user_id,$username){
+function isUserPower(){
+    return $_SESSION["power"] == 1;
+}
+
+function registerLoggedUser($user_id,$username,$power){
     $_SESSION["user_id"] = $user_id;
     $_SESSION["username"] = $username;
+    $_SESSION["power"] = $power;
 }
 
 function isValidString($value): bool
