@@ -442,6 +442,9 @@ async function getUserPage(url){
                                 <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
                                     Annulla
                                 </button>
+                                <button id="theme-toggle" style="position: fixed; top: 60px; right: 20px; padding: 0.5rem 1rem; cursor: pointer;">
+                            🌙 Dark Mode
+                            </button>
                             </div>
 
                             <form id="profileForm" class="w-100" style="max-width: 350px;">
@@ -556,6 +559,28 @@ async function getUserPage(url){
                             cancelBtn.classList.add("d-none");
                             editBtn.classList.remove("d-none");
                         });
+                        const toggleButton = document.getElementById('theme-toggle');
+                        const body = document.body;
+
+                        // Controlla se c'è un tema salvato
+                        if(localStorage.getItem('theme') === 'dark') {
+                        body.classList.add('dark-theme');
+                        toggleButton.textContent = '☀️ Light Mode';
+                        }
+
+                        // Cambia tema al click
+                        toggleButton.addEventListener('click', () => {
+                        body.classList.toggle('dark-theme');
+
+                        if(body.classList.contains('dark-theme')) {
+                            toggleButton.textContent = '☀️ Light Mode';
+                            localStorage.setItem('theme', 'dark');
+                        } else {
+                            toggleButton.textContent = '🌙 Dark Mode';
+                            localStorage.setItem('theme', 'light');
+                        }
+                        });
+
                     break;
                             
             } 

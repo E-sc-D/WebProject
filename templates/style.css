@@ -16,7 +16,13 @@
 *::after {
     box-sizing: border-box;
 }
-
+body.dark-theme{
+    --sb-primary : #7C3AED;
+    --sb-secondary : #5B21B6;
+    --bg-primary : #F5F3FF;
+    --bg-secondary : #FFFFFF;
+    --text: #1F2937;
+}
 html,
 body {
     height: 100%;

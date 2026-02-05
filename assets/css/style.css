@@ -10,7 +10,24 @@
 /* ==========================
    RESET DI BASE
    ========================== */
+body.dark-theme{
+    --sb-primary : #7C3AED;
+    --sb-secondary : #5B21B6;
+    --bg-primary : #F5F3FF;
+    --bg-secondary : #FFFFFF;
+    --text: #1F2937;
+}
+#theme-toggle {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
 
+#theme-toggle:hover {
+  background-color: #0056b3;
+}
 *,
 *::before,
 *::after {
