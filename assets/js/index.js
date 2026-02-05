@@ -615,6 +615,19 @@ async function getPostsPage(url, path) {
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                                <span class="btn-like-count like-post">
+                                    <i class="far fa-heart"></i>
+                                    <span class="post-like-count">
+                                        ${element.like_count}
+                                    </span>
+                                </span>
+                                <span class="btn-like-count like-post">
+                                    <i class="fa-regular fa-comment"></i>
+                                    <span class="post-like-count">
+                                        ${element.comment_count}
+                                    </span>
+                                </span>
+
                             </div>
                             <div class="mt-2 card-text">
                                 <p>${element.testo}</p>

@@ -92,18 +92,75 @@
             </div>
             
         </div>
-        <footer class="py-4 bg-dark mt-auto text-white">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div ><span>Copyright &copy; Your Website 2023</span></div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
+        <footer class="mt-auto py-3 ">
+            <div class="container-fluid px-4">
+                <div class="row align-items-center gy-3">
+
+                    <!-- UNIVERSITÀ -->
+                    <div class="col-md-4 small">
+                        <strong>Università di Bologna</strong><br>
+                        Corso di ingegneria e scienze informatiche<br>
+                        A.A. 2025/2026
+                    </div>
+
+                    <!-- PARTECIPANTI -->
+                    <div class="col-md-4 small text-md-center">
+                        <div>
+                            <strong>Adis Dema</strong>
+                            adis.dema@studio.unibo.it
+                        </div>
+                        <div>
+                            <strong>Edoardo</strong>
+                            Edoardo@studio.unibo.it
+        
                         </div>
                     </div>
-                </footer>
+                    <div class="col-md-4 text-md-end">
+                        <span class="badge bg-secondary me-1">
+                            <i class="fa-brands fa-html5 me-1"></i>HTML5
+                        </span>
+
+                        <span class="badge bg-secondary me-1">
+                            <i class="fa-brands fa-css3-alt me-1"></i>CSS3
+                        </span>
+
+                        <span class="badge bg-secondary me-1">
+                            <i class="fa-brands fa-js me-1"></i>JS ES6
+                        </span>
+
+                        <a href="https://getbootstrap.com/"
+                        target="_blank"
+                        rel="noopener"
+                        class="badge me-1 bootstrap text-decoration-none">
+                            <i class="fa-brands fa-bootstrap me-1"></i>Bootstrap 5.3
+                        </a>
+
+                        <a href="https://fontawesome.com/"
+                        target="_blank"
+                        rel="noopener"
+                        class="badge fontawesome text-decoration-none">
+                            <i class="fa-solid fa-icons me-1"></i>Font Awesome 6.3
+                        </a>
+                    </div>
+
+                </div>
+
+                <hr class="my-3 border-secondary">
+
+                <!-- BOTTOM -->
+                <div class="d-flex flex-column flex-md-row justify-content-between small">
+                    <div>© 2026 Università degli Studi di Esempio</div>
+                    <div>
+                        <a href="#"  text-decoration-none me-3">Privacy</a>
+                        <a href="#"  text-decoration-none me-3">Cookie</a>
+                        <a href="#"  text-decoration-none">Accessibilità</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+
+
         <!-- JS -->
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
