@@ -55,6 +55,28 @@ function writeInLoginError(error) {
     document.querySelector("form > p").innerText = error;
 }
 
+async function evNewPost(text){
+    try {
+        const response = await fetch(`../api-add-post.php?text=${text}`);
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const json = await response.json();
+        switch (json["error"]) {
+            case "":
+                getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
+                break;
+            default:
+                console.log(json["error"]);
+                break;
+        }
+    
+    }   catch (error) {
+    console.log(error.message);
+    }
+}
+
 async function evSignIn(username, password,email) {
     const url = '../api-signIn.php';
     const formData = new FormData();
