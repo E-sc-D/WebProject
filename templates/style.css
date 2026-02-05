@@ -279,7 +279,7 @@ body.sb-sidenav-toggled #layoutSidenav_content {
         width: 100%;
     }
     .sb-sidenav .nav-link {
-        color: var(--text);
+        color: var(--bg-primary);
     }
 
     body.sb-sidenav-toggled #layoutSidenav_nav {
