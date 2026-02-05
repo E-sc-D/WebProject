@@ -748,7 +748,16 @@ h2 {
     }
     .auto-resize {
     resize: none;          
-    overflow: hidden;      
+    overflow: hidden;     
+}
+#editBtn,#saveBtn{
+    background-color: var(--sb-primary);
+    color: var(--text);
+}
+#editBtn:hover,#saveBtn:hover{
+    background: transparent;
+    color: var(--sb-primary);
+    border-color: var(--sb-primary);
 }
 /* ==========================
    STILE PER form commenti

@@ -402,7 +402,7 @@ async function getUserPage(url){
                             </div>
 
                             <div class="mb-3">
-                                <button id="editBtn" class="btn btn-outline-primary btn-sm">
+                                <button id="editBtn" class="btn btn-sm">
                                     Modifica profilo
                                 </button>
                                 <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
@@ -437,7 +437,7 @@ async function getUserPage(url){
 
                                 <button id="saveBtn"
                                     type="submit"
-                                    class="btn btn-primary w-100 d-none">
+                                    class="btn  w-100 d-none">
                                     Salva modifiche
                                 </button>
                             </form>
@@ -866,6 +866,62 @@ async function getPostPage(url) {
         console.log(error.stack);
     }
 }
+async function getPostComments(url,posts_path) {
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Response status: " + response.status);
+        }
+
+        const json = await response.json();
+
+        let doc = "";
+
+        
+        switch (json["error"]) {
+            case "nologin":
+                generaLoginPage()
+                throw new Error("no login");
+        
+            default:
+                break;
+        }
+        
+        json["data"].forEach(element => {
+            doc += `<div class="card spotted-comment mb-3">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="comment-user">${element.username}</span>
+                                            <span class="comment-time">${timeAgo(element.data_creazione)}</span>
+                                        </div>
+                                        <p class="comment-text mb-1">
+                                            ${element.contenuto}
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn-like-sm">
+                                                <i class="far fa-heart"></i><span class="post-like-count">${element.like_count}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>`//qua ci va l'html dei commenti
+        });
+
+        document.querySelector(posts_path).innerHTML = doc;
+
+       for (let i = 0; i < json["data"].length; i++) {
+            document.querySelector(`${posts_path} > div:nth-child(${i+1}) div > div.d-flex.justify-content-end > button`)
+                .addEventListener("click",function(){
+                    evToggleLike(`../api-togglelike.php?comment_id=${json["data"][i]["comment_id"]}`,
+                        `${posts_path} > div:nth-child(${i+1}) div > div.d-flex.justify-content-end > button > span`);
+                });
+        }
+        
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 async function getCompactPostsPage(url,path) {
     try {
         const response = await fetch(url);
@@ -931,7 +987,9 @@ async function getCompactPostsPage(url,path) {
 }
 
 
-async function getPostsPage(url, path) {
+async function getPostsPage(url, path,bool) {
+    if (bool == 'undefined')
+        bool = false;
     try {
         const response = await fetch(url);
 
@@ -946,24 +1004,44 @@ async function getPostsPage(url, path) {
             generaLoginPage();
             throw new Error("no login");
         }
-
         let doc = `<div class="row g-4 card-row">`;
-        json["data"].forEach(element => {
-            doc += `
-                <div class="col-6 col-lg-3">
-                    <div class="card shadow-sm h-100 custom-card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
-                            </div>
-                            <div class="mt-2 card-text">
-                                <p>${element.testo}</p>
-                                ${setState(element.blocked,element.inspected)}
+        if(!bool){
+            json["data"].forEach(element => {
+                doc += `
+                    <div class="col-6 col-lg-3">
+                        <div class="card shadow-sm h-100 custom-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                                </div>
+                                <div class="mt-2 card-text">
+                                    <p>${element.testo}</p>
+                                    ${setState(element.blocked,element.inspected)}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>`;
-        });
+                    </div>`;
+            });
+        }
+        else{
+            json["data"].forEach(element => {
+                doc += `
+                    <div class="col-6 col-lg-3">
+                        <div class="card shadow-sm h-100 custom-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
+                                    <span class="online-badge position-absolute"></span>
+                                </div>
+                                <div class="mt-2 card-text">
+                                    <p>${element.testo}</p>
+                                    ${setState(element.blocked,element.inspected)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
 
         
         doc += `</div>`;
@@ -983,7 +1061,7 @@ async function getPostsPage(url, path) {
 
 
 async function getMyPosts(path){
-    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=my_posts",path);
+    getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=my_posts",path,true);
 }
 
 async function addPost(url) {
