@@ -384,7 +384,7 @@ async function getUserPage(url){
 
             const json = await response.json();
 
-            let form = `<div class="container-fluid px-4 ">
+            let form = `<div class="container-fluid px-4 pt-5">
                     <!-- Header profilo -->
                         <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card ">
                             <div class="d-flex flex-column align-items-center text-center">
@@ -392,7 +392,47 @@ async function getUserPage(url){
                                 <span><i class="fa-solid fa-circle-user profile-avatar"></i></span>
                                 <span class="online-badge position-absolute"></span>
                                 </div>
-                                <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
+                                <div class="mb-3">
+                                    <button id="editBtn" class="btn btn-outline-primary btn-sm">
+                                        Modifica profilo
+                                    </button>
+                                    <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
+                                        Annulla
+                                    </button>
+                                </div>
+
+                                <form id="profileForm" class="w-100" style="max-width: 350px;">
+
+                                    <div class="mb-3 text-start">
+                                        <label class="form-label">Nome utente</label>
+                                        <input type="text" class="form-control editable" value="${json["data"]["username"]}" disabled>
+                                    </div>
+
+                                    <div class="mb-3 text-start">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control editable" value="${json["data"]["email"]}" disabled>
+                                    </div>
+
+                                    <div class="mb-3 text-start">
+                                        <label class="form-label">Bio</label>
+                                        <textarea class="form-control editable auto-resize" rows="1" disabled rows="3" disabled>
+                                            ${json["data"]["bio"]}
+                                        </textarea>
+                                    </div>
+
+                                    <button id="saveBtn" type="submit" class="btn btn-primary w-100 d-none">
+                                        Salva modifiche
+                                    </button>
+                                </form>
+                                
+                            </div>
+                        </div> 
+                        <div class="row g-4 card-row">
+                            
+                        </div>        
+                    </div>`;
+            
+/* <h2 class="mb-0 fw-bold">${json["data"]["username"]}</h2>
                                 <div class="text-primary">${json["data"]["email"]}</div>
                                 <p class="text-secondary mb-3 mt-2">
                                 ${json["data"]["bio"]}
@@ -403,15 +443,7 @@ async function getUserPage(url){
                                         <span class="fw-bold fs-5">${json["data"]["npost"]}</span><br>
                                         <small class="text-muted">Post</small>
                                     </div>
-                                </div>
-                            </div>
-                        </div> 
-                        <div class="row g-4 card-row">
-                            
-                        </div>        
-                    </div>`;
-            
-
+                                </div> */
             
             switch (json["error"]) {
                 case "nologin":
@@ -432,6 +464,26 @@ async function getUserPage(url){
                     break;
                             
             } 
+            //script per aggiustare larea di bio 
+            const textareas = document.querySelectorAll(".auto-resize");
+
+            function autoResize(el) {
+                el.style.height = "auto";
+                el.style.height = el.scrollHeight + "px";
+            }
+
+            textareas.forEach(textarea => {
+                autoResize(textarea);
+
+                textarea.addEventListener("input", () => {
+                    autoResize(textarea);
+                });
+            });
+
+            // Quando entri in modalità modifica
+            editBtn.addEventListener("click", () => {
+                textareas.forEach(el => autoResize(el));
+            });
     } catch (error) {
         console.log(error.message);
     }
@@ -1256,7 +1308,7 @@ document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-ch
 
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(2)")
     .addEventListener("click",function(){
-    getNew
+    getNewPostPage();
 });
 
 //logout
