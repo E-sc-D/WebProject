@@ -63,7 +63,13 @@
                                 <i class="fas fa-sign-out-alt"></i>
                             </div>
                             <span>Logout</span>
-                        </a>        
+                        </a>
+                        <a class="nav-link" href="#!" hidden>
+                                <div class="sb-nav-link-icon" aria-hidden="true">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <span>Dashboard</span>
+                        </a >        
                     </div>
                 </div>
                 <!-- Footer della sidenav -->

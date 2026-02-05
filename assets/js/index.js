@@ -130,22 +130,10 @@ async function evIsAdminLoggedIn(){
 
     const json = await response.json(); 
     if(json["data"]["s_power_user"] == 1){
-                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div")
-                        .innerHTML += `
-                            <a class="nav-link" href="#!">
-                                <div class="sb-nav-link-icon" aria-hidden="true">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                </div>
-                                <span>Dashboard</span>
-                            </a>`
-                    
-                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
-                        .addEventListener("click",function(){
-                        loadWaitScreen();
-                        getAdminPage();
-                    });
-
-                }
+        document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+            .hidden = false;         
+    } else {document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+            .hidden = true;   }
     } catch (error) {
         console.log(json["error"]);
     }
@@ -172,23 +160,9 @@ async function evLogin(username, password) {
 
         switch (json["error"]) {
             case "":
-                if(json["data"]["s_power_user"] == 1){
-                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div")
-                        .innerHTML += `
-                            <a class="nav-link" href="#!">
-                                <div class="sb-nav-link-icon" aria-hidden="true">
-                                    <i class="fas fa-tachometer-alt"></i>
-                                </div>
-                                <span>Dashboard</span>
-                            </a>`
-                    
-                    document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
-                        .addEventListener("click",function(){
-                        loadWaitScreen();
-                        getAdminPage();
-                    });
-
-                }
+                document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+                    .hidden = false;
+                
                 loadWaitScreen();
                 getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all&id=0","main");
                 break;
@@ -1331,6 +1305,8 @@ async function getAdminPage() {
 }
 
 
+evIsAdminLoggedIn();
+getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all","main");
 
 //get feed
 document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:nth-child(1)")
@@ -1355,7 +1331,12 @@ document.querySelector("body > nav > a").addEventListener("click" ,function(){
     getUserPage("../api-get-user.php");
 })
 
-evIsAdminLoggedIn();
-getPostsPage("../api-post.php?limit=5&offset=0&order=asc&filter=all","main");
+document.querySelector("#sidenavAccordion > div.sb-sidenav-menu > div > a:last-child")
+                        .addEventListener("click",function(){
+                        loadWaitScreen();
+                        getAdminPage();
+                    });
+
+
 
 
