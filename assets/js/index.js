@@ -614,6 +614,7 @@ async function getNewPostPage() {
     });
 }
 
+
 async function getPostPage(url) {
     try {
         const response = await fetch(url);
@@ -732,144 +733,6 @@ async function getPostPage(url) {
             });
         document.querySelector("span.btn-report").addEventListener("click",() => {
             evToggleReport(json["data"][0]["post_id"]);
-            });
-        document.querySelector("button.btn-respond").addEventListener("click",() =>{
-            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
-            });
-       
-        document.querySelector("#commentForm").addEventListener("submit",(event) =>{
-            event.preventDefault();
-            evAddComment("#commentsList",json["data"][0]["post_id"],document.querySelector("#commentTextInput").value);
-            document.querySelector("#commentTextInput").value = "";
-            }); 
-
-        document.querySelector("#commentForm").addEventListener("reset",(event) =>{
-            document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
-            document.querySelector("#commentTextInput").value = "";
-            }); 
-
-
-        getPostComments(`../api-comments-of-post.php?post_id=${json["data"][0]["post_id"]}`,"#commentsList");    
-    } catch (error) {
-        console.log(error.stack);
-    }
-}
-
-async function getPostPage(url) {
-    try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("Response status: " + response.status);
-        }
-
-        const json = await response.json();
-
-        let doc = "";
-
-        switch (json["error"]) {
-            case "nologin":
-                generaLoginPage()
-                throw new Error("no login");
-        
-            default:
-                console.log(json["error"]);
-                break;
-        }
-        
-        doc = `<article class="container-fluid py-4 spotted-wrapper">
-    <div class="row justify-content-center align-items-start g-4">
-
-        <!-- COLONNA POST -->
-        <div class="col-12 col-lg-5">
-            <div class="card spotted-post h-100">
-                <div class="card-body d-flex flex-column h-100">
-
-                    <!-- HEADER -->
-                    <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
-                        <span class="spotted-time">
-                            ${timeAgo(json["data"][0]["data_creazione"])}
-                        </span>
-
-                        <span class="btn-report" role="button" aria-label="Segnala post">
-                            <i class="fa-regular fa-flag"></i>
-                        </span>
-
-                        <span role="button" class="btn-like like-post">
-                            <i class="far fa-heart"></i>
-                            <span class="post-like-count">
-                                ${json["data"][0]["like_count"]}
-                            </span>
-                        </span>
-                    </div>
-
-                    <!-- TESTO CENTRATO -->
-                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
-                        <p class="spotted-text text-center m-0">
-                            ${json["data"][0]["testo"]}
-                        </p>
-                    </div>
-
-                    <!-- FOOTER -->
-                    <div class="mt-3 text-center">
-                        <button
-                            type="button"
-                            class="btn btn-warning btn-respond"
-                            id="btnRespond">
-                            Respond
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- COLONNA COMMENTI -->
-        <div class="col-12 col-lg-5">
-
-            <!-- FORM COMMENTO -->
-            <div class="card spotted-comment mb-3" id="commentFormWrapper" hidden>
-                <div class="card-body">
-                    <form id="commentForm">
-                        <label for="commentTextInput" class="form-label">
-                            Aggiungi un commento:
-                        </label>
-
-                        <textarea
-                            class="form-control mb-3"
-                            id="commentTextInput"
-                            rows="3"
-                            placeholder="Scrivi il tuo commento..."
-                            required>
-                        </textarea>
-
-                        <div class="d-flex gap-2 justify-content-end">
-                            <button type="reset" class="btn btn-secondary btn-sm">
-                                Annulla
-                            </button>
-                            <button type="submit" class="btn btn-success btn-sm">
-                                Invia
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- LISTA COMMENTI -->
-            <div id="commentsList" class="d-flex flex-column gap-3">
-                <!-- comment cards -->
-            </div>
-
-        </div>
-
-    </div>
-</article>
-`
-
-        await writeInPage(doc);
-        
-        document.querySelector("span.like-post").addEventListener("click",() => {
-            evToggleLike(`../api-togglelike.php?post_id=${json["data"][0]["post_id"]}`,"span.like-post > span ");
             });
         document.querySelector("button.btn-respond").addEventListener("click",() =>{
             document.querySelector("#commentFormWrapper").toggleAttribute("hidden");
@@ -1358,7 +1221,7 @@ function renderReportedPosts(reportedPostsContainer,reportedPosts){
         reportedPostsContainer.innerHTML = `<p class="no-post">Nessun post segnalato</p>`;
         return;
     }
-    reportedPosts.forEach(post => {
+    reportedPosts.forEach((post,i) => {
         const col = document.createElement("div");
         col.classList.add("col-12", "col-lg-4");
         col.innerHTML = `
@@ -1397,6 +1260,18 @@ function renderReportedPosts(reportedPostsContainer,reportedPosts){
             </div>
         `;
         reportedPostsContainer.appendChild(col);
+        reportedPostsContainer.querySelector(`div:nth-child(${i+1}) > div > div > 
+            div > button.btn-normalize`)
+            .addEventListener("click",function(){
+                reportedPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                fetch(`../api-remove-reports.php?post_id=${post.post_id}`);
+            })
+        reportedPostsContainer.querySelector(`div:nth-child(${i+1})  > div > div > 
+            div > button.btn-remove`)
+            .addEventListener("click",function(){
+                reportedPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                fetch(`../api-eval-post.php?blocked=1&post_id=${post.post_id}`);
+            })
 });
 }
 function removePendingPost(pendingPosts,postId) {

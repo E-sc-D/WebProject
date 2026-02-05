@@ -574,6 +574,36 @@ class DatabaseHelper{
         return $result;
     }
 
+    public function removeReports($post_id): array
+    {
+             
+        $result = [
+            "data"  => [],
+            "error" => ""
+        ];
+
+        try {
+
+            $sql = "
+                    DELETE FROM report_post
+                    WHERE post_id = ?
+                ";
+
+            $stmt = $this->db->prepare($sql);
+            if (!$stmt) {
+                throw new Exception($this->db->error);
+            }
+
+            $stmt->bind_param("i", $post_id);
+            $stmt->execute();
+            $stmt->close();
+
+        } catch (Exception $e) {
+            $result["error"] = $e->getMessage();
+        }
+
+        return $result;
+    }
 
     public function addCommentPost($user_id,$post_id,$text): array
     {
