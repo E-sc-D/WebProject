@@ -24,12 +24,12 @@ if (isUserLoggedIn()) {
         if(isset($_GET["post_id"])){
             $queryResult = $dbh->togglePostReport(
             $_SESSION["user_id"],
-            $_GET["post_id"]
+            $pid
         ); 
         } else {
             $queryResult = $dbh->toggleCommentLike(
             $_SESSION["user_id"],
-            $_GET["comment_id"]);
+            $pid);
         } 
         
 
