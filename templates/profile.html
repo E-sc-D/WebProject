@@ -71,136 +71,67 @@
             <!-- CONTENUTO PRINCIPALE -->
             <div id="layoutSidenav_content">
                 <main>
-                    <div class="container-fluid px-4 ">
-                    <!-- Header profilo -->
-                        <div class="rounded-4 shadow-sm p-4 mb-4 position-relative profile-card ">
-                            <div class="d-flex flex-column align-items-center text-center">
-                                <div class="position-relative mb-2">
-                                <span><i class="fa-solid fa-circle-user profile-avatar"></i></span>
-                                <span class="online-badge position-absolute"></span>
-                                </div>
-                                <h2 class="mb-0 fw-bold">Maria Rossi</h2>
-                                <div class="text-primary">@mariarossi</div>
-                                <p class="text-secondary mb-3 mt-2">
-                                Appassionata di fotografia e viaggi ✨<br>
-                                Vivo per catturare momenti speciali 📸
-                                </p>
-                                <!-- Statistiche -->
-                                <div class="d-flex gap-4 justify-content-center mb-2">
-                                    <div class="social-stat">
-                                        <span class="fw-bold fs-5">4</span><br>
-                                        <small class="text-muted">Post</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
+                    <div class="container-fluid px-4 pt-5">
+        <div class="rounded-4 shadow-sm p-4 mb-4 profile-card">
+            <div class="d-flex flex-column align-items-center text-center">
+
+                <!-- Avatar -->
+                <div class="position-relative mb-3">
+                    <i class="fa-solid fa-circle-user profile-avatar"></i>
+                    <span class="online-badge position-absolute"></span>
+                </div>
+
+                <h2 class="fw-bold mb-3">Maria Rossi</h2>
+
+                <!-- BOTTONI TOGGLE -->
+                <div class="mb-3">
+                    <button id="editBtn" class="btn btn-outline-primary btn-sm">
+                        Modifica profilo
+                    </button>
+                    <button id="cancelBtn" class="btn btn-outline-secondary btn-sm d-none">
+                        Annulla
+                    </button>
+                </div>
+
+                <!-- FORM -->
+                <form id="profileForm" class="w-100" style="max-width: 350px;">
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label">Nome utente</label>
+                        <input type="text" class="form-control editable" value="@mariarossi" disabled>
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control editable" value="maria.rossi@email.com" disabled>
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-control editable auto-resize"
+                                    rows="1"
+                                    disabled rows="3" disabled>
+                Appassionata di fotografia e viaggi ✨
+                Vivo per catturare momenti speciali 📸
+                        </textarea>
+                    </div>
+
+                    <button id="saveBtn" type="submit" class="btn btn-primary w-100 d-none">
+                        Salva modifiche
+                    </button>
+                </form>
+
+                <!-- Stat -->
+                <div class="mt-4">
+                    <span class="fw-bold fs-5">4</span><br>
+                    <small class="text-muted">Post</small>
+                </div>
+
+            </div>
+        </div>
                         <div class="row g-4 card-row">
                             <!--CARD 1-->
-                            <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                             <!--CARD 2-->
-                            <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                             <!--CARD 3-->
-                            <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                             <!--CARD 4-->
-                             <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6 col-lg-3">
-                                <div class="card shadow-sm h-100 custom-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <small class="card-time"><span>•</span> 2h fa</small>
-                                            <button type="button" class="btn btn-icon card-icon">
-                                                <i class="far fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <div class="mt-2 card-text">
-                                                ipsum dolor sit amet, consectetur adipiscing elit.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            
                         </div>    
                         
                     </div>
@@ -227,6 +158,49 @@
             crossorigin="anonymous"
         ></script>
         <script src="script.js"></script>
+        <!-- script per abilitare le modifiche -->
+        <script>
+            const editBtn = document.getElementById("editBtn");
+            const cancelBtn = document.getElementById("cancelBtn");
+            const saveBtn = document.getElementById("saveBtn");
+            const editableFields = document.querySelectorAll(".editable");
+
+            editBtn.addEventListener("click", () => {
+                editableFields.forEach(el => el.disabled = false);
+                saveBtn.classList.remove("d-none");
+                cancelBtn.classList.remove("d-none");
+                editBtn.classList.add("d-none");
+            });
+
+            cancelBtn.addEventListener("click", () => {
+                editableFields.forEach(el => el.disabled = true);
+                saveBtn.classList.add("d-none");
+                cancelBtn.classList.add("d-none");
+                editBtn.classList.remove("d-none");
+            });
+        </script>
+        <!-- script per aggiustare larea di bio -->
+        <script>
+            const textareas = document.querySelectorAll(".auto-resize");
+
+            function autoResize(el) {
+                el.style.height = "auto";
+                el.style.height = el.scrollHeight + "px";
+            }
+
+            textareas.forEach(textarea => {
+                autoResize(textarea);
+
+                textarea.addEventListener("input", () => {
+                    autoResize(textarea);
+                });
+            });
+
+            // Quando entri in modalità modifica
+            editBtn.addEventListener("click", () => {
+                textareas.forEach(el => autoResize(el));
+            });
+        </script>
     </body>
 
 </html>

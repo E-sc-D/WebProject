@@ -731,7 +731,7 @@ h2 {
       position: relative;
       margin-top: -80px;
       color: var(--sb-primary);
-      background: var(--bg-secondary);
+      /* background: var(--bg-secondary); */
     }
     .online-badge {
       width: 20px;
@@ -746,6 +746,10 @@ h2 {
     .social-stat {
       min-width: 90px;
     }
+    .auto-resize {
+    resize: none;          
+    overflow: hidden;      
+}
 /* ==========================
    STILE PER form commenti
    ========================== */
