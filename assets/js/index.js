@@ -21,12 +21,10 @@ function loadWaitScreen(){
 
 function setState(blocked,inspected){
     if(blocked == 1){
-        return "<p>Post bloccato</p>";
+        return "red";
+    } else if(inspected == 1) {
+        return "yellow";
     }
-    if(inspected == 1){
-        return "<p>Post in attesa di verifica</p>";
-    }
-    return "";
 }
 function timeAgo(dateTimeString) {
     const past = new Date(dateTimeString);
@@ -905,7 +903,6 @@ async function getPostsPage(url, path,bool) {
                                 </div>
                                 <div class="mt-2 card-text">
                                     <p>${element.testo}</p>
-                                    ${setState(element.blocked,element.inspected)}
                                 </div>
                             </div>
                         </div>
@@ -920,11 +917,11 @@ async function getPostsPage(url, path,bool) {
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <small class="card-time"><span>•</span>${timeAgo(element.data_creazione)}</small>
-                                    <span class="online-badge position-absolute"></span>
+                                    <span class="online-badge position-absolute 
+                                    ${setState(element.blocked,element.inspected)} "></span>
                                 </div>
                                 <div class="mt-2 card-text">
                                     <p>${element.testo}</p>
-                                    ${setState(element.blocked,element.inspected)}
                                 </div>
                             </div>
                         </div>
@@ -1157,7 +1154,7 @@ function renderPendingPosts(pendingPostsContainer,pendingPosts) {
         const col = document.createElement("div");
         col.classList.add("col-12", "col-lg-4");
         col.innerHTML = `
-        <div class="card spotted-post h-100">
+        <div class="card spotted-post h-100" postid="${post.post_id}">
             <div class="card-body d-flex flex-column h-100">
 
                 <!-- HEADER -->
@@ -1199,16 +1196,16 @@ function renderPendingPosts(pendingPostsContainer,pendingPosts) {
     </div>`
         ;
         pendingPostsContainer.appendChild(col);
-        pendingPostsContainer.querySelector(`div:nth-child(${i+1}) > div > div > 
+        pendingPostsContainer.querySelector(`div[postid = "${post.post_id}"] > div > 
             div > button.btn-success`)
             .addEventListener("click",function(){
-                pendingPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                pendingPostsContainer.querySelector(`div[postid = "${post.post_id}"]`).remove()
                 fetch(`../api-eval-post.php?blocked=0&post_id=${post.post_id}`);
             })
-        pendingPostsContainer.querySelector(`div:nth-child(${i+1})  > div > div > 
+        pendingPostsContainer.querySelector(`div[postid = "${post.post_id}"]  > div > 
             div > button.btn-decline`)
             .addEventListener("click",function(){
-                pendingPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                pendingPostsContainer.querySelector(`div[postid = "${post.post_id}"]`).remove()
                 fetch(`../api-eval-post.php?blocked=1&post_id=${post.post_id}`);
             })
     });
@@ -1225,7 +1222,7 @@ function renderReportedPosts(reportedPostsContainer,reportedPosts){
         const col = document.createElement("div");
         col.classList.add("col-12", "col-lg-4");
         col.innerHTML = `
-            <div class="card spotted-post h-100">
+            <div class="card spotted-post h-100" postid="${post.post_id}" >
                 <div class="card-body d-flex flex-column h-100">
                     <!-- HEADER -->
                     <div class="d-flex justify-content-between align-items-center mb-3 spotted-header">
@@ -1260,16 +1257,16 @@ function renderReportedPosts(reportedPostsContainer,reportedPosts){
             </div>
         `;
         reportedPostsContainer.appendChild(col);
-        reportedPostsContainer.querySelector(`div:nth-child(${i+1}) > div > div > 
-            div > button.btn-normalize`)
+        reportedPostsContainer.querySelector(`div[postid = "${post.post_id}"] > div >
+             div > button.btn.btn-respond.btn-normalize`)
             .addEventListener("click",function(){
-                reportedPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                reportedPostsContainer.querySelector(`div[postid = "${post.post_id}"]`).remove()
                 fetch(`../api-remove-reports.php?post_id=${post.post_id}`);
             })
-        reportedPostsContainer.querySelector(`div:nth-child(${i+1})  > div > div > 
+        reportedPostsContainer.querySelector(`div[postid = "${post.post_id}"] > div >  
             div > button.btn-remove`)
             .addEventListener("click",function(){
-                reportedPostsContainer.querySelector(`div:nth-child(${i+1})`).remove()
+                reportedPostsContainer.querySelector(`div[postid = "${post.post_id}"]`).remove()
                 fetch(`../api-eval-post.php?blocked=1&post_id=${post.post_id}`);
             })
 });

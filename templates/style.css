@@ -805,3 +805,11 @@ h2 {
     color: var(--text);
 }
 
+.yellow{
+    background: yellow;
+}
+
+.red{
+    background: red;
+}
+
